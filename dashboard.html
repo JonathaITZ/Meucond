@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeuCondo - Gestão Pro</title>
+    <title>MeuCondo - Gestão Pro (Infobip Inside)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -47,9 +47,8 @@
                 </button>
                 
                 <div id="submenu-financeiro" class="hidden ml-4 mt-1 space-y-1 border-l border-white/10 pl-2">
-                    <button onclick="mudarTela('despesas')" id="btn-despesas" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Despesas</button>
                     <button onclick="mudarTela('receber')" id="btn-receber" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Valor a receber</button>
-                    <button onclick="mudarTela('cobrar')" id="btn-cobrar" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Cobrar</button>
+                    <button onclick="mudarTela('cobrar')" id="btn-cobrar" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Cobrar WhatsApp</button>
                 </div>
             </div>
 
@@ -71,7 +70,7 @@
         <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10 shadow-sm">
             <div class="flex items-center gap-2">
                 <div id="status-indicador" class="w-2 h-2 rounded-full bg-green-500"></div>
-                <span id="label-topo" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest">A carregar...</span>
+                <span id="label-topo" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest uppercase">Sistema Online</span>
             </div>
             <div class="flex items-center gap-3">
                 <p id="nomeUser" class="text-xs font-bold text-[#1B4D5C]">Utilizador</p>
@@ -86,13 +85,13 @@
         </section>
     </main>
 
-    <!-- MODAL COBRANÇA WHATSAPP REAL -->
+    <!-- MODAL COBRANÇA WHATSAPP (INFOBIP READY) -->
     <div id="modalCobrarIndividual" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
             <div class="brand-blue p-6 text-white flex justify-between items-center">
                 <div>
-                    <h3 class="font-bold text-lg">Enviar Cobrança WhatsApp</h3>
-                    <p class="text-[10px] uppercase tracking-widest opacity-60">Mensagem Real com API</p>
+                    <h3 class="font-bold text-lg">Cobradores Automáticos</h3>
+                    <p class="text-[10px] uppercase tracking-widest opacity-60">Infobip WhatsApp API</p>
                 </div>
                 <button onclick="fecharModal('modalCobrarIndividual')"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
@@ -104,55 +103,33 @@
                         <p id="indMoradorNome" class="text-sm font-bold text-slate-700">---</p>
                         <p id="indMoradorUnidade" class="text-[10px] font-bold text-slate-400 uppercase">---</p>
                     </div>
-                    <div id="statusWA_UI" class="text-green-500 flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4"></i>
+                    <div class="text-green-500 flex items-center gap-1">
+                        <i data-lucide="zap" class="w-3 h-3"></i>
                         <span class="text-[9px] font-bold uppercase tracking-widest">API Integrada</span>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Valor (R$)</label>
-                        <input type="number" id="indValor" step="0.01" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold outline-none focus:border-[#1B4D5C]">
+                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Valor do Boleto (R$)</label>
+                        <input type="number" id="indValor" step="0.01" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold focus:border-[#1B4D5C] outline-none">
                     </div>
                     <div>
                         <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Vencimento</label>
-                        <input type="date" id="indVencimento" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none focus:border-[#1B4D5C]">
+                        <input type="date" id="indVencimento" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Anexar Boleto (Opcional)</label>
-                    <div class="mt-1 flex items-center justify-center w-full">
-                        <label class="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-slate-200 rounded-2xl cursor-pointer bg-slate-50 hover:bg-slate-100">
-                            <i data-lucide="upload-cloud" class="w-6 h-6 text-slate-400"></i>
-                            <p class="text-[10px] text-slate-500 mt-1" id="fileNameDisplay">PDF ou Imagem</p>
-                            <input id="indArquivo" type="file" class="hidden" accept=".pdf,image/*" onchange="updateFileName(this)" />
-                        </label>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Mensagem Personalizada</label>
-                    <textarea id="indMensagem" rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none resize-none">Olá, [nome]! Segue a cobrança da unidade [unidade] no valor de R$ [valor]. Vencimento: [vencimento]. Por favor, confirme o recebimento.</textarea>
-                    <p class="text-[9px] text-slate-400 mt-1 uppercase font-bold">Tags: [nome] [unidade] [valor] [vencimento]</p>
+                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Mensagem de Envio</label>
+                    <textarea id="indMensagem" rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none resize-none">Olá, [nome]! O boleto da unidade [unidade] no valor de R$ [valor] com vencimento em [vencimento] já está disponível.</textarea>
+                    <p class="text-[9px] text-slate-400 mt-1 uppercase font-bold">Tags automáticas: [nome], [unidade], [valor], [vencimento]</p>
                 </div>
 
                 <button type="submit" id="btnEnviarCobrancaReal" class="w-full brand-blue text-white py-4 rounded-xl font-bold text-[11px] shadow-xl hover:brightness-110 active:scale-95 transition-all uppercase tracking-wide flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i> DISPARAR WHATSAPP REAL
+                    <i data-lucide="send" class="w-4 h-4"></i> DISPARAR WHATSAPP (INFOBIP)
                 </button>
             </form>
-        </div>
-    </div>
-
-    <!-- Modais Genéricos -->
-    <div id="modalBaixaReceita" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-sm rounded-[2rem] shadow-2xl p-8 border border-slate-100">
-            <h3 class="font-bold text-[#1B4D5C] uppercase tracking-widest text-xs mb-4">Recebimento</h3>
-            <div id="baixaInfo" class="bg-slate-50 p-4 rounded-2xl mb-4 text-sm font-bold text-slate-700"></div>
-            <input type="date" id="baixaRecData" class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-sm mb-4">
-            <input type="hidden" id="baixaRecId">
-            <button onclick="confirmarBaixaReceita()" class="w-full bg-[#8CC63F] text-white py-4 rounded-xl font-bold text-[11px] uppercase">CONFIRMAR PAGO</button>
         </div>
     </div>
 
@@ -161,9 +138,10 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsYnpvanN1ZmhkcHNndGRvaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODM0MDYsImV4cCI6MjA4NjY1OTQwNn0.ur2eh1AE8TRFN4reKu0md9yU7Dq8NtJ-YnteQof1tNw'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // Chaves da API WhatsApp
-        let WA_API_URL = localStorage.getItem('wa_url') || '';
-        let WA_API_KEY = "74db9ef02bac6e7db1498d6c125c04d6-a2e76b84-b34e-4875-a57e-0f056d26fd4a"; // Sua chave inserida
+        // CONFIGURAÇÕES INFOBIP
+        const INFOBIP_BASE_URL = "4k35gp.api.infobip.com";
+        const INFOBIP_API_KEY = "74db9ef02bac6e7db1498d6c125c04d6-a2e76b84-b34e-4875-a57e-0f056d26fd4a";
+        let WA_SENDER = localStorage.getItem('wa_sender') || ""; // Número remetente registado na Infobip
 
         const userAtivo = localStorage.getItem('usuarioAtivo');
         if (userAtivo) { document.getElementById('nomeUser').innerText = userAtivo; }
@@ -184,50 +162,44 @@
             const conteudo = document.getElementById('conteudo-principal');
 
             if (tela === 'moradores') {
-                label.innerText = "Gestão Aurora > Moradores";
+                label.innerText = "Moradores";
                 conteudo.innerHTML = `
                     <div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
                         <div class="flex justify-between items-end mb-8">
-                            <div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Moradores</h3><p class="text-sm font-medium text-slate-400 italic">Lista de residentes cadastrados</p></div>
-                            <button onclick="mudarTela('moradores')" class="bg-[#8CC63F] text-white px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl active:scale-95 transition-all">NOVO MORADOR</button>
+                            <div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Moradores</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Gestão de residentes do Condomínio Aurora</p></div>
+                            <button onclick="mudarTela('moradores')" class="bg-[#8CC63F] text-white px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i> NOVO</button>
                         </div>
-                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Nome</th><th class="px-8 py-6 text-center">Unidade</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaMoradores" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
+                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Nome</th><th class="px-8 py-6 text-center">Unidade</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaMoradores" class="divide-y divide-slate-50 text-sm font-medium text-slate-600 italic"></tbody></table></div>
                     </div>`;
                 buscarMoradores();
             } else if (tela === 'cobrar') {
-                label.innerText = "Financeiro > Cobrar WhatsApp";
+                label.innerText = "Financeiro > Cobrar Individual";
                 conteudo.innerHTML = `
                     <div class="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4">
-                        <div class="mb-8"><h3 class="text-3xl font-black text-slate-800 tracking-tight text-center sm:text-left">Cobrar Morador</h3><p class="text-sm font-medium text-slate-400 italic text-center sm:text-left">Envie boletos e avisos instantâneos</p></div>
+                        <div class="mb-8"><h3 class="text-3xl font-black text-slate-800 tracking-tight">Cobrar Individual</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Disparo de mensagens via Infobip WhatsApp</p></div>
                         <div id="listaMoradoresCobrar" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
                     </div>`;
                 buscarMoradoresCobrar();
             } else if (tela === 'receber') {
-                label.innerText = "Financeiro > Receber";
-                conteudo.innerHTML = `
-                    <div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4">
-                        <div class="flex justify-between items-end mb-8">
-                            <div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Receitas</h3><p class="text-sm font-medium text-slate-400 italic">Controlo de pagamentos pendentes</p></div>
-                        </div>
-                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden">
-                            <table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Morador</th><th class="px-8 py-6 text-center">Valor</th><th class="px-8 py-6 text-center">Status</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaReceitas" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table>
-                        </div>
-                    </div>`;
+                label.innerText = "Financeiro > Valor a Receber";
+                conteudo.innerHTML = `<div class="max-w-6xl mx-auto">
+                    <div class="flex justify-between items-end mb-8"><div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Receitas</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Fluxo de pagamentos</p></div></div>
+                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Morador</th><th class="px-8 py-6 text-center">Valor</th><th class="px-8 py-6 text-center">Status</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaReceitas" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
+                </div>`;
                 buscarReceitas();
             } else if (tela === 'config') {
                 label.innerText = "Configurações";
                 conteudo.innerHTML = `
-                    <div class="max-w-2xl mx-auto animate-in fade-in slide-in-from-bottom-4">
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden">
-                            <div class="brand-blue p-8 text-white"><h3 class="text-xl font-bold">API WhatsApp</h3><p class="text-[10px] opacity-40 uppercase tracking-widest font-bold mt-1">Status da Conexão</p></div>
+                    <div class="max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                            <div class="brand-blue p-8 text-white"><h3 class="text-xl font-bold">Configuração Infobip</h3><p class="text-[10px] opacity-40 uppercase tracking-widest font-bold mt-1">Status: API Integrada</p></div>
                             <div class="p-8 space-y-6">
-                                <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100 text-[11px] text-blue-700 font-medium">Insira abaixo o seu Endpoint de envio (URL fornecida pela API). A sua chave já está pré-configurada.</div>
-                                <div><label class="text-[10px] font-bold text-gray-400 uppercase ml-1">URL da API (Endpoint)</label><input type="text" id="wa_url_input" value="${WA_API_URL}" placeholder="https://api.infobip.com/whatsapp/1/send-text" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none text-sm focus:border-[#1B4D5C]"></div>
-                                <button onclick="salvarConfigWA()" class="w-full brand-blue text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl active:scale-95 transition-all">GRAVAR CONFIGURAÇÃO</button>
-                                <div class="flex flex-col items-center py-4 border-t border-slate-100">
-                                    <div class="w-24 h-24 bg-slate-50 border-2 border-slate-100 rounded-2xl flex items-center justify-center mb-2"><i data-lucide="qr-code" class="w-10 h-10 text-slate-200"></i></div>
-                                    <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest">Sessão Ativa</p>
+                                <div>
+                                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Número Remetente (Infobip)</label>
+                                    <input type="text" id="wa_sender_input" value="${WA_SENDER}" placeholder="Ex: 5583900000000" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none text-sm focus:border-[#1B4D5C]">
+                                    <p class="text-[9px] text-slate-400 mt-2">O número que registou na plataforma Infobip para envio.</p>
                                 </div>
+                                <button onclick="salvarConfigWA()" class="w-full brand-blue text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl active:scale-95 transition-all">GRAVAR REMETENTE</button>
                             </div>
                         </div>
                     </div>`;
@@ -236,45 +208,45 @@
         }
 
         function salvarConfigWA() {
-            const url = document.getElementById('wa_url_input').value;
-            localStorage.setItem('wa_url', url);
-            WA_API_URL = url;
-            alert("Endpoint configurado!");
+            const sender = document.getElementById('wa_sender_input').value;
+            localStorage.setItem('wa_sender', sender);
+            WA_SENDER = sender;
+            alert("Número remetente guardado!");
         }
 
-        // --- LÓGICA WHATSAPP REAL ---
+        // --- LÓGICA DE DISPARO INFOBIP ---
 
-        function updateFileName(input) {
-            const display = document.getElementById('fileNameDisplay');
-            display.innerText = input.files[0] ? input.files[0].name : "PDF ou Imagem";
-        }
+        async function dispararInfobipWhatsApp(destino, texto) {
+            if (!WA_SENDER) throw new Error("Configure o Número Remetente nas Configurações.");
+            
+            // Limpa o número de destino (apenas números)
+            const cleanDestino = destino.replace(/\D/g, "");
+            const cleanSender = WA_SENDER.replace(/\D/g, "");
 
-        async function enviarWhatsAppAPI(numero, texto, arquivo) {
-            if (!WA_API_URL) throw new Error("Configure a URL da API no menu Configurações.");
-            
-            // Lógica para formatar número (remove espaços, parênteses e traços)
-            const cleanNumber = numero.replace(/\D/g, "");
-            
-            // Se houver arquivo, a API geralmente requer Base64 ou URL. Vamos simular o envio de texto primeiro.
+            const url = `https://${INFOBIP_BASE_URL}/whatsapp/1/message/text`;
+
             const payload = {
-                from: "MeuCondo",
-                to: cleanNumber,
-                content: { text: texto }
+                messages: [
+                    {
+                        from: cleanSender,
+                        to: cleanDestino,
+                        content: { text: texto }
+                    }
+                ]
             };
 
-            // Chamada Fetch Real
-            const response = await fetch(WA_API_URL, {
+            const response = await fetch(url, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `App ${WA_API_KEY}`
+                    'Authorization': `App ${INFOBIP_API_KEY}`
                 },
                 body: JSON.stringify(payload)
             });
 
             if (!response.ok) {
                 const errData = await response.json();
-                throw new Error(errData.message || "Erro ao disparar mensagem.");
+                throw new Error(errData.description || "Erro no envio Infobip.");
             }
 
             return await response.json();
@@ -285,16 +257,12 @@
             const btn = document.getElementById('btnEnviarCobrancaReal');
             const id = document.getElementById('indMoradorId').value;
             const morador = listaMoradores.find(x => x.id == id);
+            
+            if (!morador.telefone) return alert("Morador sem telefone registado!");
+
             const valor = document.getElementById('indValor').value;
             const vencimento = document.getElementById('indVencimento').value;
             const template = document.getElementById('indMensagem').value;
-            const arquivo = document.getElementById('indArquivo').files[0];
-
-            if (!morador.telefone) return alert("Morador sem telefone cadastrado!");
-
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> DISPARANDO API...`;
-            lucide.createIcons();
 
             const msgFinal = template
                 .replace('[nome]', morador.nome_completo)
@@ -302,11 +270,15 @@
                 .replace('[valor]', valor)
                 .replace('[vencimento]', vencimento.split('-').reverse().join('/'));
 
-            try {
-                // 1. Enviar WhatsApp Real
-                await enviarWhatsAppAPI(morador.telefone, msgFinal, arquivo);
+            btn.disabled = true;
+            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> A DISPARAR INFOBIP...`;
+            lucide.createIcons();
 
-                // 2. Gravar no Banco se o envio deu certo
+            try {
+                // 1. Disparo Real via API
+                await dispararInfobipWhatsApp(morador.telefone, msgFinal);
+
+                // 2. Gravar Cobrança no Supabase (se o disparo não falhou)
                 await supabaseClient.from('receitas').insert([{
                     morador_id: id,
                     nome_morador: morador.nome_completo,
@@ -316,16 +288,16 @@
                     status: 'pendente'
                 }]);
 
-                alert(`MENSAGEM ENVIADA!\nA cobrança foi lançada no banco e o WhatsApp disparado para ${morador.nome_completo}.`);
+                alert(`MENSAGEM ENVIADA!\nCobrança lançada e WhatsApp enviado via Infobip para ${morador.nome_completo}.`);
                 fecharModal('modalCobrarIndividual');
                 mudarTela('receber');
 
             } catch (err) {
+                alert("ERRO INFOBIP: " + err.message);
                 console.error(err);
-                alert("ERRO NA API: " + err.message);
             } finally {
                 btn.disabled = false;
-                btn.innerText = "DISPARAR WHATSAPP REAL";
+                btn.innerText = "DISPARAR WHATSAPP (INFOBIP)";
             }
         });
 
@@ -336,7 +308,7 @@
             const corpo = document.getElementById('tabelaMoradores');
             if (data && corpo) {
                 listaMoradores = data;
-                corpo.innerHTML = data.map(m => `<tr class="hover:bg-slate-50"><td class="px-8 py-6 font-bold text-slate-700">${m.nome_completo}</td><td class="px-8 py-6 text-center font-bold text-slate-400 uppercase text-[10px] tracking-widest">${m.unidade}</td><td class="px-8 py-6 text-right"><button onclick="apagar('moradores', ${m.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`).join('');
+                corpo.innerHTML = data.map(m => `<tr class="hover:bg-slate-50"><td class="px-8 py-6 font-bold text-slate-700">${m.nome_completo}</td><td class="px-8 py-6 text-center font-bold text-slate-400 uppercase text-[10px]">${m.unidade}</td><td class="px-8 py-6 text-right"><button onclick="apagar('moradores', ${m.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`).join('');
                 lucide.createIcons();
             }
         }
@@ -348,7 +320,7 @@
                 listaMoradores = data;
                 container.innerHTML = data.map(m => `
                     <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center justify-between hover:border-[#1B4D5C] transition-all group">
-                        <div class="flex flex-col"><p class="font-black text-slate-700 leading-tight">${m.nome_completo}</p><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Unidade ${m.unidade}</span></div>
+                        <div class="flex flex-col"><p class="font-black text-slate-700 leading-tight">${m.nome_completo}</p><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Apto ${m.unidade}</span></div>
                         <button onclick="abrirCobrarWhatsApp(${m.id})" class="brand-blue text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"><i data-lucide="message-square" class="w-5 h-5"></i></button>
                     </div>`).join('');
                 lucide.createIcons();
@@ -374,7 +346,7 @@
                     <tr class="hover:bg-slate-50 transition-colors">
                         <td class="px-8 py-6 font-bold text-slate-700">${r.nome_morador}</td>
                         <td class="px-8 py-6 text-center font-black text-slate-800">R$ ${parseFloat(r.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                        <td class="px-8 py-6 text-center"><button onclick="abrirBaixaReceita(${r.id})" class="px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest shadow-sm ${r.status === 'pago' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}">${r.status.toUpperCase()}</button></td>
+                        <td class="px-8 py-6 text-center"><span class="px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${r.status === 'pago' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}">${r.status.toUpperCase()}</span></td>
                         <td class="px-8 py-6 text-right"><button onclick="apagar('receitas', ${r.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
                     </tr>`).join('');
                 lucide.createIcons();
