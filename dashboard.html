@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeuCondo - Gestão Pro (Infobip Inside)</title>
+    <title>MeuCondo - Gestão Total Pro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1e293b; }
         .brand-blue { background-color: #1B4D5C; }
         .submenu-item { transition: all 0.2s; cursor: pointer; }
         .submenu-item:hover { background-color: rgba(255,255,255,0.05); color: #8CC63F; }
@@ -20,35 +20,31 @@
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
-<body class="flex h-screen overflow-hidden text-slate-900">
+<body class="flex h-screen overflow-hidden">
 
     <!-- Sidebar Lateral -->
     <aside class="w-64 brand-blue flex flex-col shrink-0 shadow-xl text-white">
-        <div class="p-6 flex flex-col items-center border-b border-white/5">
-            <svg width="40" height="40" viewBox="0 0 100 100" fill="none">
-                <path d="M20 80V40H40V80H20Z" fill="white" fill-opacity="0.2" />
-                <path d="M40 80V25H65V80H40Z" fill="white" fill-opacity="0.3" />
-                <path d="M35 55L50 70L85 30" stroke="#8CC63F" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            <h1 class="font-bold text-lg mt-2 tracking-tight">MeuCondo</h1>
+        <div class="p-8 flex flex-col items-center border-b border-white/5">
+            <div class="bg-white/10 p-3 rounded-[1.5rem] mb-3">
+                <i data-lucide="home" class="w-8 h-8 text-[#8CC63F]"></i>
+            </div>
+            <h1 class="font-bold text-xl tracking-tighter">MeuCondo <span class="text-[#8CC63F]">PRO</span></h1>
         </div>
 
-        <nav class="flex-1 py-6 px-4 space-y-1 text-white/70 font-medium">
+        <nav class="flex-1 py-6 px-4 space-y-2 text-white/70 font-medium">
             <button onclick="mudarTela('moradores')" id="btn-moradores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all hover:text-white">
                 <i data-lucide="users" class="w-4 h-4"></i> Moradores
             </button>
 
             <div>
                 <button onclick="toggleFinanceiro()" class="w-full flex items-center justify-between px-4 py-3 hover:text-white transition-all text-sm rounded-xl">
-                    <div class="flex items-center gap-3">
-                        <i data-lucide="dollar-sign" class="w-4 h-4"></i> Financeiro
-                    </div>
+                    <div class="flex items-center gap-3"><i data-lucide="dollar-sign" class="w-4 h-4"></i> Financeiro</div>
                     <i data-lucide="chevron-down" id="seta-financeiro" class="w-3 h-3 transition-transform"></i>
                 </button>
-                
-                <div id="submenu-financeiro" class="hidden ml-4 mt-1 space-y-1 border-l border-white/10 pl-2">
-                    <button onclick="mudarTela('receber')" id="btn-receber" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Valor a receber</button>
-                    <button onclick="mudarTela('cobrar')" id="btn-cobrar" class="submenu-item w-full text-left px-4 py-2 rounded-lg text-xs uppercase tracking-tighter">• Cobrar WhatsApp</button>
+                <div id="submenu-financeiro" class="hidden ml-4 mt-2 space-y-1 border-l border-white/10 pl-3">
+                    <button onclick="mudarTela('despesas')" id="btn-despesas" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Despesas</button>
+                    <button onclick="mudarTela('receber')" id="btn-receber" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Valor a Receber</button>
+                    <button onclick="mudarTela('cobrar')" id="btn-cobrar" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Cobrar WhatsApp</button>
                 </div>
             </div>
 
@@ -57,7 +53,7 @@
             </button>
         </nav>
 
-        <div class="p-4 border-t border-white/5 bg-black/10">
+        <div class="p-6 border-t border-white/5 bg-black/10">
             <button onclick="sair()" class="w-full flex items-center gap-3 px-4 py-3 text-white/40 hover:text-red-400 transition-colors">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
                 <span class="text-xs font-bold uppercase tracking-widest">Sair</span>
@@ -67,81 +63,138 @@
 
     <!-- Área Principal -->
     <main class="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
-        <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-8 z-10 shadow-sm">
-            <div class="flex items-center gap-2">
-                <div id="status-indicador" class="w-2 h-2 rounded-full bg-green-500"></div>
-                <span id="label-topo" class="text-[10px] font-bold text-gray-400 uppercase tracking-widest uppercase">Sistema Online</span>
-            </div>
+        <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10">
             <div class="flex items-center gap-3">
-                <p id="nomeUser" class="text-xs font-bold text-[#1B4D5C]">Utilizador</p>
-                <div class="w-10 h-10 rounded-2xl bg-slate-50 flex items-center justify-center text-slate-400 border border-slate-200">
+                <div class="w-2 h-2 rounded-full bg-[#8CC63F] animate-pulse"></div>
+                <span id="label-topo" class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Painel Operacional</span>
+            </div>
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p id="nomeUser" class="text-xs font-bold text-[#1B4D5C]">Utilizador</p>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase">Administrador</p>
+                </div>
+                <div class="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-[#1B4D5C]">
                     <i data-lucide="user" class="w-5 h-5"></i>
                 </div>
             </div>
         </header>
 
-        <section id="conteudo-principal" class="flex-1 p-8 overflow-y-auto">
-            <!-- Injeção dinâmica -->
+        <section id="conteudo-principal" class="flex-1 p-10 overflow-y-auto">
+            <!-- Conteúdo injetado via JS -->
         </section>
     </main>
 
-    <!-- MODAL COBRANÇA WHATSAPP (INFOBIP READY) -->
-    <div id="modalCobrarIndividual" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden flex flex-col max-h-[95vh]">
-            <div class="brand-blue p-6 text-white flex justify-between items-center">
-                <div>
-                    <h3 class="font-bold text-lg">Cobradores Automáticos</h3>
-                    <p class="text-[10px] uppercase tracking-widest opacity-60">Infobip WhatsApp API</p>
-                </div>
-                <button onclick="fecharModal('modalCobrarIndividual')"><i data-lucide="x" class="w-6 h-6"></i></button>
+    <!-- MODAIS GLOBAIS -->
+
+    <!-- Modal Morador -->
+    <div id="modalMorador" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-10">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="font-black text-[#1B4D5C] uppercase text-xs tracking-widest">Registo de Morador</h3>
+                <button onclick="fecharModal('modalMorador')"><i data-lucide="x" class="w-6 h-6 text-slate-300"></i></button>
             </div>
-            
-            <form id="formCobrarIndividual" class="p-8 space-y-5 overflow-y-auto flex-1 bg-white">
-                <input type="hidden" id="indMoradorId">
-                <div class="bg-slate-50 p-4 rounded-2xl border border-slate-100 flex justify-between items-center">
-                    <div>
-                        <p id="indMoradorNome" class="text-sm font-bold text-slate-700">---</p>
-                        <p id="indMoradorUnidade" class="text-[10px] font-bold text-slate-400 uppercase">---</p>
-                    </div>
-                    <div class="text-green-500 flex items-center gap-1">
-                        <i data-lucide="zap" class="w-3 h-3"></i>
-                        <span class="text-[9px] font-bold uppercase tracking-widest">API Integrada</span>
-                    </div>
-                </div>
-
+            <form id="formMorador" class="space-y-4">
+                <input type="text" id="mNome" placeholder="Nome Completo" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
                 <div class="grid grid-cols-2 gap-4">
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Valor do Boleto (R$)</label>
-                        <input type="number" id="indValor" step="0.01" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-bold focus:border-[#1B4D5C] outline-none">
-                    </div>
-                    <div>
-                        <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Vencimento</label>
-                        <input type="date" id="indVencimento" required class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none">
-                    </div>
+                    <input type="text" id="mUnidade" placeholder="Unidade" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
+                    <input type="text" id="mBloco" placeholder="Bloco" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
                 </div>
+                <input type="text" id="mTelefone" placeholder="WhatsApp (ex: 55839...)" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest">GUARDAR</button>
+            </form>
+        </div>
+    </div>
 
-                <div>
-                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Mensagem de Envio</label>
-                    <textarea id="indMensagem" rows="4" class="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm outline-none resize-none">Olá, [nome]! O boleto da unidade [unidade] no valor de R$ [valor] com vencimento em [vencimento] já está disponível.</textarea>
-                    <p class="text-[9px] text-slate-400 mt-1 uppercase font-bold">Tags automáticas: [nome], [unidade], [valor], [vencimento]</p>
+    <!-- Modal Despesa -->
+    <div id="modalDespesa" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-md rounded-[2.5rem] shadow-2xl p-10">
+            <div class="flex justify-between items-center mb-6"><h3 class="font-black text-red-600 uppercase text-xs tracking-widest">Lançar Despesa</h3><button onclick="fecharModal('modalDespesa')"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <form id="formDespesa" class="space-y-4">
+                <input type="text" id="dDescricao" placeholder="Descrição" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" step="0.01" id="dValor" placeholder="Valor R$" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 font-bold outline-none">
+                    <input type="date" id="dVencimento" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none">
                 </div>
+                <div class="flex gap-2">
+                    <select id="dCategoria" class="flex-1 px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm"></select>
+                    <button type="button" onclick="abrirModal('modalNovaCategoria')" class="bg-[#1B4D5C] text-white px-5 rounded-2xl"><i data-lucide="plus" class="w-5 h-5"></i></button>
+                </div>
+                <button type="submit" class="w-full bg-red-500 text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">CONFIRMAR LANÇAMENTO</button>
+            </form>
+        </div>
+    </div>
 
-                <button type="submit" id="btnEnviarCobrancaReal" class="w-full brand-blue text-white py-4 rounded-xl font-bold text-[11px] shadow-xl hover:brightness-110 active:scale-95 transition-all uppercase tracking-wide flex items-center justify-center gap-2">
-                    <i data-lucide="send" class="w-4 h-4"></i> DISPARAR WHATSAPP (INFOBIP)
+    <!-- Modal Gerar Mensalidades (Em Massa) -->
+    <div id="modalGerarReceita" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-2xl rounded-[2.5rem] shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+            <div class="brand-blue p-8 text-white flex justify-between items-center shrink-0">
+                <div><h3 class="font-bold text-xl tracking-tight">Gerar Taxas em Massa</h3><p class="text-white/40 text-[10px] uppercase tracking-widest font-black">Lançamento para o condomínio</p></div>
+                <button onclick="fecharModal('modalGerarReceita')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <div class="p-8 space-y-6 overflow-y-auto flex-1 bg-white">
+                <div class="grid grid-cols-2 gap-6">
+                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Valor Unitário (R$)</label><input type="number" id="genValor" step="0.01" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 font-bold outline-none"></div>
+                    <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Vencimento Padrão</label><input type="date" id="genVencimento" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none"></div>
+                </div>
+                <div class="space-y-2">
+                    <p class="text-[10px] font-black text-slate-400 uppercase ml-1">Selecionar Moradores</p>
+                    <div id="listaMoradoresBatch" class="border border-slate-100 rounded-2xl divide-y divide-slate-50 max-h-60 overflow-y-auto bg-slate-50/30"></div>
+                </div>
+            </div>
+            <div class="p-8 bg-slate-50 border-t border-slate-100"><button onclick="lancarBatchReceitas()" class="w-full brand-blue text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest">LANÇAR PARA SELECIONADOS</button></div>
+        </div>
+    </div>
+
+    <!-- Modal Cobrar WhatsApp (Infobip Real) -->
+    <div id="modalCobrarIndividual" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl p-10">
+            <div class="flex justify-between items-center mb-6"><h3 class="font-black text-[#1B4D5C] uppercase text-xs tracking-widest">Cobrança WhatsApp</h3><button onclick="fecharModal('modalCobrarIndividual')"><i data-lucide="x" class="w-6 h-6"></i></button></div>
+            <form id="formCobrarIndividual" class="space-y-5">
+                <input type="hidden" id="indMoradorId">
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100"><p id="indMoradorNome" class="text-sm font-black text-slate-700 leading-none">---</p><p id="indMoradorUnidade" class="text-[10px] font-bold text-slate-400 uppercase mt-1 tracking-widest">---</p></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" id="indValor" placeholder="Valor R$" step="0.01" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 font-bold outline-none">
+                    <input type="date" id="indVencimento" required class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none">
+                </div>
+                <textarea id="indMensagem" rows="4" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-100 text-sm italic">Olá, [nome]! O boleto da unidade [unidade] no valor de R$ [valor] com vencimento em [vencimento] já está disponível.</textarea>
+                <button type="submit" id="btnEnviarWA" class="w-full brand-blue text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-widest flex items-center justify-center gap-3">
+                    <i data-lucide="send" class="w-4 h-4 text-[#8CC63F]"></i> DISPARAR WHATSAPP REAL
                 </button>
             </form>
         </div>
     </div>
 
+    <!-- Modal Baixa Receita -->
+    <div id="modalBaixaReceita" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-sm rounded-[2.5rem] shadow-2xl p-10">
+            <h3 class="font-black text-[#1B4D5C] uppercase tracking-widest text-xs mb-6">Confirmar Pagamento</h3>
+            <div id="baixaInfo" class="bg-slate-50 p-5 rounded-2xl mb-6 text-sm font-black text-slate-700"></div>
+            <input type="hidden" id="baixaRecId">
+            <button onclick="confirmarBaixaReceita()" class="w-full bg-[#8CC63F] text-white py-5 rounded-2xl font-black text-[11px] uppercase shadow-lg">BAIXA NO BANCO</button>
+        </div>
+    </div>
+
+    <!-- Modal Nova Categoria -->
+    <div id="modalNovaCategoria" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-[60]">
+        <div class="bg-white w-full max-w-xs rounded-[2rem] shadow-2xl p-8">
+            <h3 class="font-black text-[#1B4D5C] text-[10px] uppercase mb-4">Nova Categoria</h3>
+            <form id="formNovaCategoria" class="space-y-4">
+                <input type="text" id="ncNome" placeholder="Ex: Manutenção" required class="w-full px-4 py-4 rounded-2xl bg-slate-50 border border-slate-100 outline-none text-sm">
+                <button type="submit" class="w-full brand-blue text-white py-4 rounded-xl font-black uppercase text-[10px]">CADASTRAR</button>
+            </form>
+        </div>
+    </div>
+
     <script>
+        // --- CONFIGURAÇÃO SUPABASE ---
         const SUPABASE_URL = 'https://vlbzojsufhdpsgtdojiv.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZsYnpvanN1ZmhkcHNndGRvaml2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEwODM0MDYsImV4cCI6MjA4NjY1OTQwNn0.ur2eh1AE8TRFN4reKu0md9yU7Dq8NtJ-YnteQof1tNw'; 
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // CONFIGURAÇÕES INFOBIP
+        // --- CONFIGURAÇÕES INFOBIP ---
         const INFOBIP_BASE_URL = "4k35gp.api.infobip.com";
         const INFOBIP_API_KEY = "74db9ef02bac6e7db1498d6c125c04d6-a2e76b84-b34e-4875-a57e-0f056d26fd4a";
-        let WA_SENDER = localStorage.getItem('wa_sender') || ""; // Número remetente registado na Infobip
+        let WA_SENDER = localStorage.getItem('wa_sender') || "447860088970";
 
         const userAtivo = localStorage.getItem('usuarioAtivo');
         if (userAtivo) { document.getElementById('nomeUser').innerText = userAtivo; }
@@ -155,51 +208,73 @@
 
         async function mudarTela(tela) {
             document.querySelectorAll('nav button, .submenu-item').forEach(b => b.classList.remove('active-link'));
-            const map = { moradores: 'btn-moradores', receber: 'btn-receber', cobrar: 'btn-cobrar', config: 'btn-config' };
+            const map = { moradores: 'btn-moradores', despesas: 'btn-despesas', receber: 'btn-receber', cobrar: 'btn-cobrar', config: 'btn-config' };
             if (map[tela]) document.getElementById(map[tela]).classList.add('active-link');
 
             const label = document.getElementById('label-topo');
             const conteudo = document.getElementById('conteudo-principal');
 
             if (tela === 'moradores') {
-                label.innerText = "Moradores";
+                label.innerText = "Gestão > Moradores";
                 conteudo.innerHTML = `
                     <div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
-                        <div class="flex justify-between items-end mb-8">
-                            <div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Moradores</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Gestão de residentes do Condomínio Aurora</p></div>
-                            <button onclick="mudarTela('moradores')" class="bg-[#8CC63F] text-white px-6 py-3 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl"><i data-lucide="plus" class="w-4 h-4 inline mr-1"></i> NOVO</button>
+                        <div class="flex justify-between items-end mb-10">
+                            <div><h3 class="text-4xl font-black text-slate-800 tracking-tighter">Moradores</h3><p class="text-sm font-medium text-slate-400 italic">Residentes activos no sistema</p></div>
+                            <button onclick="abrirModal('modalMorador')" class="bg-[#8CC63F] text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">NOVO CADASTRO</button>
                         </div>
-                        <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Nome</th><th class="px-8 py-6 text-center">Unidade</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaMoradores" class="divide-y divide-slate-50 text-sm font-medium text-slate-600 italic"></tbody></table></div>
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-10 py-8">Nome</th><th class="px-10 py-8 text-center">Unidade</th><th class="px-10 py-8 text-right">Ação</th></tr></thead><tbody id="tabelaMoradores" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
                     </div>`;
                 buscarMoradores();
-            } else if (tela === 'cobrar') {
-                label.innerText = "Financeiro > Cobrar Individual";
+            } else if (tela === 'despesas') {
+                label.innerText = "Financeiro > Despesas";
                 conteudo.innerHTML = `
-                    <div class="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4">
-                        <div class="mb-8"><h3 class="text-3xl font-black text-slate-800 tracking-tight">Cobrar Individual</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Disparo de mensagens via Infobip WhatsApp</p></div>
-                        <div id="listaMoradoresCobrar" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+                    <div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div class="flex justify-between items-end mb-10">
+                            <div><h3 class="text-4xl font-black text-slate-800 tracking-tighter">Despesas</h3><p class="text-sm font-medium text-slate-400 italic">Controlo de manutenções e saídas</p></div>
+                            <button onclick="abrirModal('modalDespesa')" class="bg-red-500 text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">LANÇAR SAÍDA</button>
+                        </div>
+                        <div class="grid grid-cols-2 gap-6 mb-10">
+                            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Total Pendente</p><p id="totalDespesaPendente" class="text-3xl font-black text-red-500 tracking-tighter">R$ 0,00</p></div>
+                            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2">Total Pago</p><p id="totalDespesaPago" class="text-3xl font-black text-green-500 tracking-tighter">R$ 0,00</p></div>
+                        </div>
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-10 py-8">Descrição</th><th class="px-10 py-8 text-center">Valor</th><th class="px-10 py-8 text-center">Status</th><th class="px-10 py-8 text-right">Acção</th></tr></thead><tbody id="tabelaDespesas" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
                     </div>`;
-                buscarMoradoresCobrar();
+                buscarDespesas();
+                buscarCategorias();
             } else if (tela === 'receber') {
                 label.innerText = "Financeiro > Valor a Receber";
-                conteudo.innerHTML = `<div class="max-w-6xl mx-auto">
-                    <div class="flex justify-between items-end mb-8"><div><h3 class="text-3xl font-black text-slate-800 tracking-tight">Receitas</h3><p class="text-sm font-medium text-slate-400 italic leading-none">Fluxo de pagamentos</p></div></div>
-                    <div class="bg-white rounded-[2rem] border border-slate-200 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-8 py-6">Morador</th><th class="px-8 py-6 text-center">Valor</th><th class="px-8 py-6 text-center">Status</th><th class="px-8 py-6 text-right">Ação</th></tr></thead><tbody id="tabelaReceitas" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
-                </div>`;
-                buscarReceitas();
-            } else if (tela === 'config') {
-                label.innerText = "Configurações";
                 conteudo.innerHTML = `
-                    <div class="max-w-xl mx-auto animate-in fade-in slide-in-from-bottom-4">
-                        <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                            <div class="brand-blue p-8 text-white"><h3 class="text-xl font-bold">Configuração Infobip</h3><p class="text-[10px] opacity-40 uppercase tracking-widest font-bold mt-1">Status: API Integrada</p></div>
-                            <div class="p-8 space-y-6">
-                                <div>
-                                    <label class="text-[10px] font-bold text-gray-400 uppercase ml-1">Número Remetente (Infobip)</label>
-                                    <input type="text" id="wa_sender_input" value="${WA_SENDER}" placeholder="Ex: 5583900000000" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none text-sm focus:border-[#1B4D5C]">
-                                    <p class="text-[9px] text-slate-400 mt-2">O número que registou na plataforma Infobip para envio.</p>
-                                </div>
-                                <button onclick="salvarConfigWA()" class="w-full brand-blue text-white py-4 rounded-xl font-bold text-[11px] uppercase tracking-wide shadow-xl active:scale-95 transition-all">GRAVAR REMETENTE</button>
+                    <div class="max-w-6xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
+                        <div class="flex justify-between items-end mb-10">
+                            <div><h3 class="text-4xl font-black text-slate-800 tracking-tighter">Receitas</h3><p class="text-sm font-medium text-slate-400 italic">Gestão de mensalidades do condomínio</p></div>
+                            <button onclick="abrirGerarBatch()" class="brand-blue text-white px-8 py-4 rounded-2xl font-black text-[11px] uppercase tracking-widest shadow-xl">GERAR MENSALIDADES EM MASSA</button>
+                        </div>
+                        <div class="grid grid-cols-3 gap-6 mb-10">
+                            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Pendente</p><p id="totalReceberPendente" class="text-3xl font-black text-orange-500 tracking-tighter">R$ 0,00</p></div>
+                            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Recebido</p><p id="totalReceberPago" class="text-3xl font-black text-green-500 tracking-tighter">R$ 0,00</p></div>
+                            <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm"><p class="text-[10px] font-black text-slate-400 uppercase mb-2 tracking-widest">Total Geral</p><p id="totalReceberGeral" class="text-3xl font-black text-slate-800 tracking-tighter">R$ 0,00</p></div>
+                        </div>
+                        <div class="bg-white rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 border-b border-slate-100 text-[10px] font-black text-slate-400 uppercase tracking-widest"><tr><th class="px-10 py-8">Morador</th><th class="px-10 py-8 text-center">Valor</th><th class="px-10 py-8 text-center">Status</th><th class="px-10 py-8 text-right">Ação</th></tr></thead><tbody id="tabelaReceitas" class="divide-y divide-slate-50 text-sm font-medium text-slate-600"></tbody></table></div>
+                    </div>`;
+                buscarReceitas();
+            } else if (tela === 'cobrar') {
+                label.innerText = "Financeiro > Cobrança WhatsApp";
+                conteudo.innerHTML = `
+                    <div class="max-w-4xl mx-auto animate-in fade-in slide-in-from-bottom-4">
+                        <div class="mb-10"><h3 class="text-4xl font-black text-slate-800 tracking-tighter">Cobrar via WhatsApp</h3><p class="text-sm font-medium text-slate-400 italic">Disparo real via Infobip API</p></div>
+                        <div id="listaMoradoresCobrar" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>
+                    </div>`;
+                buscarMoradoresCobrar();
+            } else if (tela === 'config') {
+                label.innerText = "Configurações Globais";
+                conteudo.innerHTML = `
+                    <div class="max-w-xl mx-auto animate-in fade-in">
+                        <div class="bg-white rounded-[3rem] shadow-sm border border-slate-100 overflow-hidden">
+                            <div class="brand-blue p-10 text-white"><h3 class="text-2xl font-black tracking-tight text-[#8CC63F]">WhatsApp API</h3><p class="text-[10px] opacity-40 uppercase tracking-[0.3em] font-black mt-1">Infobip Integration</p></div>
+                            <div class="p-10 space-y-8">
+                                <div class="bg-blue-50 p-6 rounded-[2rem] border border-blue-100 text-[11px] text-blue-700 font-bold italic leading-relaxed">Número de Teste/Remetente: ${WA_SENDER}</div>
+                                <div><label class="text-[10px] font-black text-slate-400 uppercase ml-1">Alterar Remetente (Sem +)</label><input type="text" id="wa_sender_input" value="${WA_SENDER}" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border border-slate-200 outline-none text-sm font-bold"></div>
+                                <button onclick="salvarConfigWA()" class="w-full brand-blue text-white py-5 rounded-2xl font-black text-[11px] uppercase tracking-[0.3em] shadow-xl transition-all active:scale-95">GRAVAR ALTERAÇÕES</button>
                             </div>
                         </div>
                     </div>`;
@@ -207,121 +282,115 @@
             lucide.createIcons();
         }
 
-        function salvarConfigWA() {
-            const sender = document.getElementById('wa_sender_input').value;
-            localStorage.setItem('wa_sender', sender);
-            WA_SENDER = sender;
-            alert("Número remetente guardado!");
-        }
-
-        // --- LÓGICA DE DISPARO INFOBIP ---
-
-        async function dispararInfobipWhatsApp(destino, texto) {
-            if (!WA_SENDER) throw new Error("Configure o Número Remetente nas Configurações.");
-            
-            // Limpa o número de destino (apenas números)
-            const cleanDestino = destino.replace(/\D/g, "");
-            const cleanSender = WA_SENDER.replace(/\D/g, "");
-
-            const url = `https://${INFOBIP_BASE_URL}/whatsapp/1/message/text`;
-
-            const payload = {
-                messages: [
-                    {
-                        from: cleanSender,
-                        to: cleanDestino,
-                        content: { text: texto }
-                    }
-                ]
-            };
-
-            const response = await fetch(url, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `App ${INFOBIP_API_KEY}`
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                const errData = await response.json();
-                throw new Error(errData.description || "Erro no envio Infobip.");
-            }
-
-            return await response.json();
-        }
-
-        document.getElementById('formCobrarIndividual').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById('btnEnviarCobrancaReal');
-            const id = document.getElementById('indMoradorId').value;
-            const morador = listaMoradores.find(x => x.id == id);
-            
-            if (!morador.telefone) return alert("Morador sem telefone registado!");
-
-            const valor = document.getElementById('indValor').value;
-            const vencimento = document.getElementById('indVencimento').value;
-            const template = document.getElementById('indMensagem').value;
-
-            const msgFinal = template
-                .replace('[nome]', morador.nome_completo)
-                .replace('[unidade]', morador.unidade)
-                .replace('[valor]', valor)
-                .replace('[vencimento]', vencimento.split('-').reverse().join('/'));
-
-            btn.disabled = true;
-            btn.innerHTML = `<i data-lucide="loader-2" class="w-4 h-4 animate-spin"></i> A DISPARAR INFOBIP...`;
-            lucide.createIcons();
-
-            try {
-                // 1. Disparo Real via API
-                await dispararInfobipWhatsApp(morador.telefone, msgFinal);
-
-                // 2. Gravar Cobrança no Supabase (se o disparo não falhou)
-                await supabaseClient.from('receitas').insert([{
-                    morador_id: id,
-                    nome_morador: morador.nome_completo,
-                    unidade: morador.unidade,
-                    valor: parseFloat(valor),
-                    data_vencimento: vencimento,
-                    status: 'pendente'
-                }]);
-
-                alert(`MENSAGEM ENVIADA!\nCobrança lançada e WhatsApp enviado via Infobip para ${morador.nome_completo}.`);
-                fecharModal('modalCobrarIndividual');
-                mudarTela('receber');
-
-            } catch (err) {
-                alert("ERRO INFOBIP: " + err.message);
-                console.error(err);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = "DISPARAR WHATSAPP (INFOBIP)";
-            }
-        });
-
-        // --- CRUD E AUXILIARES ---
-
+        // --- GESTÃO DE MORADORES ---
+        let listaMoradores = [];
         async function buscarMoradores() {
             const { data } = await supabaseClient.from('moradores').select('*').order('nome_completo');
             const corpo = document.getElementById('tabelaMoradores');
             if (data && corpo) {
                 listaMoradores = data;
-                corpo.innerHTML = data.map(m => `<tr class="hover:bg-slate-50"><td class="px-8 py-6 font-bold text-slate-700">${m.nome_completo}</td><td class="px-8 py-6 text-center font-bold text-slate-400 uppercase text-[10px]">${m.unidade}</td><td class="px-8 py-6 text-right"><button onclick="apagar('moradores', ${m.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`).join('');
+                corpo.innerHTML = data.map(m => `<tr class="hover:bg-slate-50 transition-colors"><td class="px-10 py-8 font-black text-slate-700">${m.nome_completo}</td><td class="px-10 py-8 text-center font-black text-slate-400 uppercase text-[10px] tracking-widest">${m.unidade}</td><td class="px-10 py-8 text-right"><button onclick="apagar('moradores', ${m.id})" class="text-slate-200 hover:text-red-500 p-3"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`).join('');
                 lucide.createIcons();
             }
         }
 
+        // --- GESTÃO DE DESPESAS ---
+        async function buscarDespesas() {
+            const { data } = await supabaseClient.from('despesas').select('*').order('data_vencimento', { ascending: false });
+            const corpo = document.getElementById('tabelaDespesas');
+            if (data && corpo) {
+                let pendente = 0, pago = 0;
+                corpo.innerHTML = data.map(d => {
+                    const val = parseFloat(d.valor);
+                    if (d.pago) pago += val; else pendente += val;
+                    return `<tr class="hover:bg-slate-50"><td class="px-10 py-8 font-black text-slate-700">${d.descricao}<br><span class="text-[9px] text-slate-400 uppercase tracking-widest">${d.categoria}</span></td><td class="px-10 py-8 text-center font-black text-slate-800 tracking-tighter">R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td><td class="px-10 py-8 text-center"><button onclick="togglePagoDespesa(${d.id}, ${d.pago})" class="px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${d.pago ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}">${d.pago ? 'Pago' : 'Pendente'}</button></td><td class="px-10 py-8 text-right"><button onclick="apagar('despesas', ${d.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`;
+                }).join('');
+                document.getElementById('totalDespesaPendente').innerText = "R$ " + pendente.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('totalDespesaPago').innerText = "R$ " + pago.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                lucide.createIcons();
+            }
+        }
+
+        async function togglePagoDespesa(id, status) {
+            await supabaseClient.from('despesas').update({ pago: !status }).eq('id', id);
+            buscarDespesas();
+        }
+
+        // --- GESTÃO DE RECEITAS (VALOR A RECEBER) ---
+        let listaReceitas = [];
+        async function buscarReceitas() {
+            const { data } = await supabaseClient.from('receitas').select('*').order('data_vencimento', { ascending: false });
+            const corpo = document.getElementById('tabelaReceitas');
+            if (data && corpo) {
+                listaReceitas = data;
+                let pendente = 0, pago = 0;
+                corpo.innerHTML = data.map(r => {
+                    const val = parseFloat(r.valor);
+                    if (r.status === 'pago') pago += val; else pendente += val;
+                    return `<tr class="hover:bg-slate-50 transition-colors"><td class="px-10 py-8 font-black text-slate-700">${r.nome_morador}</td><td class="px-10 py-8 text-center font-black text-slate-800 tracking-tighter">R$ ${val.toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td><td class="px-10 py-8 text-center"><button onclick="abrirBaixaReceita(${r.id})" class="px-5 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${r.status === 'pago' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}">${r.status.toUpperCase()}</button></td><td class="px-10 py-8 text-right"><button onclick="apagar('receitas', ${r.id})" class="text-slate-200 hover:text-red-500 p-3"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td></tr>`;
+                }).join('');
+                document.getElementById('totalReceberPendente').innerText = "R$ " + pendente.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('totalReceberPago').innerText = "R$ " + pago.toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                document.getElementById('totalReceberGeral').innerText = "R$ " + (pendente + pago).toLocaleString('pt-BR', {minimumFractionDigits: 2});
+                lucide.createIcons();
+            }
+        }
+
+        async function abrirGerarBatch() {
+            const { data } = await supabaseClient.from('moradores').select('*').order('nome_completo');
+            const lista = document.getElementById('listaMoradoresBatch');
+            if (data && lista) {
+                lista.innerHTML = data.map(m => `<label class="flex items-center justify-between px-6 py-4 hover:bg-white transition-colors cursor-pointer"><div class="flex flex-col"><span class="text-sm font-bold text-slate-700">${m.nome_completo}</span><span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Apto ${m.unidade}</span></div><input type="checkbox" name="moradorSelect" value="${m.id}" data-nome="${m.nome_completo}" data-unidade="${m.unidade}" checked class="w-5 h-5 rounded border-slate-300 text-[#1B4D5C]"></label>`).join('');
+                document.getElementById('genValor').value = "0.00";
+                document.getElementById('genVencimento').value = new Date().toISOString().split('T')[0];
+                abrirModal('modalGerarReceita');
+            }
+        }
+
+        async function lancarBatchReceitas() {
+            const valor = parseFloat(document.getElementById('genValor').value);
+            const venc = document.getElementById('genVencimento').value;
+            const checks = document.querySelectorAll('input[name="moradorSelect"]:checked');
+            if (!valor || !venc || checks.length === 0) return alert("Preencha o valor, data e selecione moradores.");
+            
+            const batch = Array.from(checks).map(cb => ({
+                morador_id: cb.value,
+                nome_morador: cb.dataset.nome,
+                unidade: cb.dataset.unidade,
+                valor: valor,
+                data_vencimento: venc,
+                status: 'pendente'
+            }));
+
+            const { error } = await supabaseClient.from('receitas').insert(batch);
+            if (!error) { fecharModal('modalGerarReceita'); buscarReceitas(); }
+        }
+
+        function abrirBaixaReceita(id) {
+            const r = listaReceitas.find(x => x.id === id);
+            if (r) {
+                document.getElementById('baixaRecId').value = r.id;
+                document.getElementById('baixaInfo').innerText = `${r.nome_morador} - Unidade ${r.unidade}`;
+                abrirModal('modalBaixaReceita');
+            }
+        }
+
+        async function confirmarBaixaReceita() {
+            const id = document.getElementById('baixaRecId').value;
+            await supabaseClient.from('receitas').update({ status: 'pago' }).eq('id', id);
+            fecharModal('modalBaixaReceita'); buscarReceitas();
+        }
+
+        // --- WHATSAPP COBRANÇA (INFOBIP REAL) ---
         async function buscarMoradoresCobrar() {
             const { data } = await supabaseClient.from('moradores').select('*').order('nome_completo');
             const container = document.getElementById('listaMoradoresCobrar');
             if (data && container) {
                 listaMoradores = data;
                 container.innerHTML = data.map(m => `
-                    <div class="bg-white p-6 rounded-[2rem] border border-slate-200 shadow-sm flex items-center justify-between hover:border-[#1B4D5C] transition-all group">
-                        <div class="flex flex-col"><p class="font-black text-slate-700 leading-tight">${m.nome_completo}</p><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Apto ${m.unidade}</span></div>
-                        <button onclick="abrirCobrarWhatsApp(${m.id})" class="brand-blue text-white w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform"><i data-lucide="message-square" class="w-5 h-5"></i></button>
+                    <div class="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm flex items-center justify-between hover:border-[#1B4D5C] transition-all group">
+                        <div><p class="font-black text-slate-700 text-lg">${m.nome_completo}</p><span class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Apto ${m.unidade}</span></div>
+                        <button onclick="abrirCobrarWhatsApp(${m.id})" class="brand-blue text-white w-14 h-14 rounded-[1.5rem] flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform"><i data-lucide="message-square" class="w-6 h-6 text-[#8CC63F]"></i></button>
                     </div>`).join('');
                 lucide.createIcons();
             }
@@ -332,32 +401,76 @@
             if (m) {
                 document.getElementById('indMoradorId').value = m.id;
                 document.getElementById('indMoradorNome').innerText = m.nome_completo;
-                document.getElementById('indMoradorUnidade').innerText = "Unidade: " + m.unidade;
+                document.getElementById('indMoradorUnidade').innerText = "Apto " + m.unidade;
                 document.getElementById('indVencimento').value = new Date().toISOString().split('T')[0];
                 abrirModal('modalCobrarIndividual');
             }
         }
 
-        async function buscarReceitas() {
-            const { data } = await supabaseClient.from('receitas').select('*').order('data_vencimento', { ascending: false });
-            const corpo = document.getElementById('tabelaReceitas');
-            if (data && corpo) {
-                corpo.innerHTML = data.map(r => `
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="px-8 py-6 font-bold text-slate-700">${r.nome_morador}</td>
-                        <td class="px-8 py-6 text-center font-black text-slate-800">R$ ${parseFloat(r.valor).toLocaleString('pt-BR', {minimumFractionDigits: 2})}</td>
-                        <td class="px-8 py-6 text-center"><span class="px-4 py-2 rounded-full text-[9px] font-black uppercase tracking-widest ${r.status === 'pago' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-500'}">${r.status.toUpperCase()}</span></td>
-                        <td class="px-8 py-6 text-right"><button onclick="apagar('receitas', ${r.id})" class="text-slate-200 hover:text-red-500 p-2"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
-                    </tr>`).join('');
-                lucide.createIcons();
-            }
+        document.getElementById('formCobrarIndividual').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnEnviarWA');
+            const morador = listaMoradores.find(x => x.id == document.getElementById('indMoradorId').value);
+            const valor = document.getElementById('indValor').value;
+            const vencimento = document.getElementById('indVencimento').value;
+            const msg = document.getElementById('indMensagem').value.replace('[nome]', morador.nome_completo).replace('[unidade]', morador.unidade).replace('[valor]', valor).replace('[vencimento]', vencimento.split('-').reverse().join('/'));
+
+            if (!morador.telefone) return alert("Morador sem telefone registado!");
+
+            btn.disabled = true; btn.innerHTML = "A DISPARAR...";
+            
+            try {
+                // 1. DISPARO INFOBIP
+                const res = await fetch(`https://${INFOBIP_BASE_URL}/whatsapp/1/message/text`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `App ${INFOBIP_API_KEY}` },
+                    body: JSON.stringify({ messages: [{ from: WA_SENDER, to: morador.telefone.replace(/\D/g, ""), content: { text: msg } }] })
+                });
+                if (!res.ok) throw new Error("Falha na API Infobip.");
+
+                // 2. LANÇAR COBRANÇA NO BANCO
+                await supabaseClient.from('receitas').insert([{ morador_id: morador.id, nome_morador: morador.nome_completo, unidade: morador.unidade, valor: parseFloat(valor), data_vencimento: vencimento, status: 'pendente' }]);
+                
+                alert("Cobrança enviada com sucesso!");
+                fecharModal('modalCobrarIndividual'); mudarTela('receber');
+            } catch (err) { alert("Erro no envio: " + err.message); }
+            finally { btn.disabled = false; btn.innerHTML = "DISPARAR WHATSAPP REAL"; }
+        });
+
+        // --- OUTRAS FUNÇÕES ---
+        async function buscarCategorias() {
+            const { data } = await supabaseClient.from('categorias_despesas').select('*').order('nome');
+            const select = document.getElementById('dCategoria');
+            if (data && select) select.innerHTML = data.map(c => `<option value="${c.nome}">${c.nome}</option>`).join('') + `<option value="Geral">Geral</option>`;
         }
 
+        document.getElementById('formDespesa').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const d = { descricao: document.getElementById('dDescricao').value, valor: parseFloat(document.getElementById('dValor').value), data_vencimento: document.getElementById('dVencimento').value, categoria: document.getElementById('dCategoria').value, pago: false };
+            await supabaseClient.from('despesas').insert([d]);
+            fecharModal('modalDespesa'); buscarDespesas();
+        });
+
+        document.getElementById('formMorador').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const m = { nome_completo: document.getElementById('mNome').value, unidade: document.getElementById('mUnidade').value, bloco: document.getElementById('mBloco').value, telefone: document.getElementById('mTelefone').value };
+            await supabaseClient.from('moradores').insert([m]);
+            fecharModal('modalMorador'); buscarMoradores();
+        });
+
+        document.getElementById('formNovaCategoria').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            await supabaseClient.from('categorias_despesas').insert([{ nome: document.getElementById('ncNome').value }]);
+            fecharModal('modalNovaCategoria'); buscarCategorias();
+        });
+
+        function salvarConfigWA() { const s = document.getElementById('wa_sender_input').value; localStorage.setItem('wa_sender', s); WA_SENDER = s; alert("API Atualizada!"); }
         function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
-        async function apagar(tabela, id) { if(confirm("Apagar permanentemente?")) { await supabaseClient.from(tabela).delete().eq('id', id); mudarTela(tabela === 'receitas' ? 'receber' : tabela); }}
+        async function apagar(tabela, id) { if(confirm("Eliminar permanentemente?")) { await supabaseClient.from(tabela).delete().eq('id', id); mudarTela(tabela); }}
         function sair() { localStorage.removeItem('usuarioAtivo'); location.href = "index.html"; }
 
+        // Inicializar
         mudarTela('moradores');
     </script>
 </body>
