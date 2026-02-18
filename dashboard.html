@@ -3,16 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeuCondo PRO - Gestão de Condomínios</title>
+    <title>MeuCondo PRO - Gestão Total</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Bibliotecas para Word (.docx) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/docxtemplater/3.21.1/docxtemplater.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pizzip/3.0.6/pizzip.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1e293b; }
         .brand-blue { background-color: #1B4D5C; }
-        .submenu-item { transition: all 0.2s; cursor: pointer; }
-        .submenu-item:hover { background-color: rgba(255,255,255,0.05); color: #8CC63F; }
         .active-link { background-color: rgba(255,255,255,0.1) !important; color: #8CC63F !important; }
         
         ::-webkit-scrollbar { width: 6px; }
@@ -25,131 +29,192 @@
 </head>
 <body class="flex h-screen overflow-hidden">
 
+    <!-- SIDEBAR -->
     <aside class="w-64 brand-blue flex flex-col shrink-0 shadow-xl text-white">
         <div class="p-8 flex flex-col items-center border-b border-white/5">
             <div class="bg-white/10 p-3 rounded-[1.5rem] mb-3">
-                <i data-lucide="home" class="w-8 h-8 text-[#8CC63F]"></i>
+                <i data-lucide="mail" class="w-8 h-8 text-[#8CC63F]"></i>
             </div>
             <h1 class="font-bold text-xl tracking-tighter">MeuCondo <span class="text-[#8CC63F]">PRO</span></h1>
         </div>
 
         <nav class="flex-1 py-6 px-4 space-y-2 text-white/70 font-medium">
-            <button onclick="mudarTela('moradores')" id="btn-moradores" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all hover:text-white">
+            <button onclick="mudarTela('moradores')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all hover:text-white">
                 <i data-lucide="users" class="w-4 h-4"></i> Moradores
             </button>
 
             <div>
-                <button onclick="toggleFinanceiro()" class="w-full flex items-center justify-between px-4 py-3 hover:text-white transition-all text-sm rounded-xl">
+                <button onclick="toggleSub('sub-financeiro')" class="w-full flex items-center justify-between px-4 py-3 hover:text-white transition-all text-sm rounded-xl">
                     <div class="flex items-center gap-3"><i data-lucide="dollar-sign" class="w-4 h-4"></i> Financeiro</div>
-                    <i data-lucide="chevron-down" id="seta-financeiro" class="w-3 h-3 transition-transform"></i>
+                    <i data-lucide="chevron-down" class="w-3 h-3"></i>
                 </button>
-                <div id="submenu-financeiro" class="hidden ml-4 mt-2 space-y-1 border-l border-white/10 pl-3">
-                    <button onclick="mudarTela('despesas')" id="btn-despesas" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Despesas</button>
-                    <button onclick="mudarTela('receber')" id="btn-receber" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Valor a Receber</button>
-                    <button onclick="mudarTela('cobrar')" id="btn-cobrar" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase tracking-widest font-bold">• Cobrar WhatsApp</button>
+                <div id="sub-financeiro" class="hidden ml-4 mt-2 space-y-1 border-l border-white/10 pl-3">
+                    <button onclick="mudarTela('despesas')" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase font-bold">• Despesas</button>
+                    <button onclick="mudarTela('receber')" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase font-bold">• Valor a Receber</button>
+                    <button onclick="mudarTela('cobrar')" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase font-bold">• Cobrar E-mail</button>
                 </div>
             </div>
 
-            <button onclick="mudarTela('config')" id="btn-config" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all hover:text-white">
-                <i data-lucide="settings" class="w-4 h-4"></i> Configurações
+            <div>
+                <button onclick="toggleSub('sub-sancoes')" class="w-full flex items-center justify-between px-4 py-3 hover:text-white transition-all text-sm rounded-xl">
+                    <div class="flex items-center gap-3"><i data-lucide="gavel" class="w-4 h-4"></i> Sanções</div>
+                    <i data-lucide="chevron-down" class="w-3 h-3"></i>
+                </button>
+                <div id="sub-sancoes" class="hidden ml-4 mt-2 space-y-1 border-l border-white/10 pl-3">
+                    <button onclick="mudarTela('advertencias')" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase font-bold">• Advertências</button>
+                    <button onclick="mudarTela('multas')" class="submenu-item w-full text-left px-3 py-2 rounded-lg text-[10px] uppercase font-bold">• Multas</button>
+                </div>
+            </div>
+
+            <button onclick="mudarTela('config')" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm transition-all hover:text-white">
+                <i data-lucide="server" class="w-4 h-4"></i> Config. Servidor
             </button>
         </nav>
 
         <div class="p-6 border-t border-white/5 bg-black/10">
             <button onclick="sair()" class="w-full flex items-center gap-3 px-4 py-3 text-white/40 hover:text-red-400 transition-colors">
                 <i data-lucide="log-out" class="w-4 h-4"></i>
-                <span class="text-xs font-bold uppercase tracking-widest">Sair</span>
+                <span class="text-xs font-bold uppercase tracking-widest text-white/50">Sair</span>
             </button>
         </div>
     </aside>
 
     <main class="flex-1 flex flex-col min-w-0 bg-[#F8FAFC]">
-        <header class="h-20 bg-white border-b border-gray-100 flex items-center justify-between px-10 z-10 shadow-sm">
+        <header class="h-20 bg-white border-b flex items-center justify-between px-10 shadow-sm">
             <div class="flex items-center gap-2">
-                <div id="db-status-dot" class="w-2.5 h-2.5 rounded-full bg-gray-300"></div>
-                <span id="label-topo" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">A aguardar ligação</span>
+                <div id="db-status-dot" class="w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]"></div>
+                <span id="label-topo" class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Painel Administrativo</span>
             </div>
-            <div class="text-xs font-bold text-[#1B4D5C]">Painel Administrativo</div>
+            <div class="text-xs font-bold text-[#1B4D5C] flex items-center gap-2">
+                <i data-lucide="user-check" class="w-4 h-4 text-[#8CC63F]"></i>
+                <span id="topo-user-name">Administrador</span>
+            </div>
         </header>
-
         <section id="conteudo-principal" class="flex-1 p-10 overflow-y-auto"></section>
     </main>
 
-    <!-- Modais -->
-    <div id="modalNovoMorador" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
-            <div class="brand-blue p-8 text-white flex justify-between items-center">
-                <h3 class="font-bold text-xl">Registar Morador</h3>
-                <button onclick="fecharModal('modalNovoMorador')"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <form id="formNovoMorador" class="p-10 space-y-6">
-                <input type="text" id="newMoradorNome" placeholder="Nome Completo" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none focus:ring-2 focus:ring-[#8CC63F]">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="newMoradorCPF" placeholder="CPF" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                    <input type="text" id="newMoradorUnidade" placeholder="Unidade" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                </div>
-                <input type="text" id="newMoradorTelefone" placeholder="WhatsApp (55...)" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl hover:brightness-110 active:scale-95 transition-all">Criar Registo</button>
-            </form>
-        </div>
-    </div>
+    <!-- MODAIS DE EDIÇÃO -->
 
-    <div id="modalNovaDespesa" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <!-- EDITAR MORADOR -->
+    <div id="modalEditarMorador" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
             <div class="brand-blue p-8 text-white flex justify-between items-center">
-                <h3 class="font-bold text-xl">Novo Lançamento</h3>
-                <button onclick="fecharModal('modalNovaDespesa')"><i data-lucide="x" class="w-6 h-6"></i></button>
-            </div>
-            <form id="formNovaDespesa" class="p-10 space-y-6">
-                <input type="text" id="newDespesaDesc" placeholder="Descrição" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none focus:ring-2 focus:ring-[#8CC63F]">
-                <div class="grid grid-cols-2 gap-4">
-                    <input type="number" step="0.01" id="newDespesaValor" placeholder="Valor R$" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                    <input type="date" id="newDespesaData" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                </div>
-                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl">Registar Despesa</button>
-            </form>
-        </div>
-    </div>
-
-    <div id="modalEditarMorador" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
-        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
-            <div class="brand-blue p-8 text-white flex justify-between items-center">
-                <h3 class="font-bold text-xl">Editar Registo</h3>
+                <h3 class="font-bold text-xl uppercase tracking-tighter italic">Editar Morador</h3>
                 <button onclick="fecharModal('modalEditarMorador')"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
             <form id="formEditarMorador" class="p-10 space-y-6">
                 <input type="hidden" id="editMoradorId">
-                <input type="text" id="editMoradorNome" placeholder="Nome Completo" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <input type="text" id="editMoradorNome" placeholder="Nome Completo" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="text" id="editMoradorCPF" placeholder="CPF" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                    <input type="text" id="editMoradorUnidade" placeholder="Unidade" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="text" id="editMoradorCPF" placeholder="CPF" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="text" id="editMoradorUnidade" placeholder="Unidade" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
                 </div>
-                <input type="text" id="editMoradorTelefone" placeholder="WhatsApp (55...)" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <input type="email" id="editMoradorEmail" placeholder="E-mail Formal" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
                 <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl">Guardar Alterações</button>
             </form>
         </div>
     </div>
 
-    <div id="modalCobrarIndividual" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+    <!-- EDITAR DESPESA -->
+    <div id="modalEditarDespesa" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
         <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
             <div class="brand-blue p-8 text-white flex justify-between items-center">
-                <h3 class="font-bold text-xl">Comunicação WhatsApp</h3>
-                <button onclick="fecharModal('modalCobrarIndividual')"><i data-lucide="x" class="w-6 h-6"></i></button>
+                <h3 class="font-bold text-xl uppercase tracking-tighter italic">Editar Despesa</h3>
+                <button onclick="fecharModal('modalEditarDespesa')"><i data-lucide="x" class="w-6 h-6"></i></button>
             </div>
-            <form id="formCobrarZAPI" class="p-10 space-y-6">
-                <input type="hidden" id="indMoradorId">
-                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100">
-                    <p id="indMoradorNome" class="font-black text-slate-700 leading-none">---</p>
-                    <p id="indMoradorUnidade" class="text-[10px] font-bold text-slate-400 uppercase mt-1">---</p>
+            <form id="formEditarDespesa" class="p-10 space-y-6">
+                <input type="hidden" id="editDespesaId">
+                <input type="text" id="editDespesaDesc" placeholder="Descrição" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" step="0.01" id="editDespesaValor" placeholder="Valor R$" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="date" id="editDespesaData" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                </div>
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl">Atualizar Lançamento</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- EDITAR RECEITA -->
+    <div id="modalEditarReceita" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
+            <div class="brand-blue p-8 text-white flex justify-between items-center">
+                <h3 class="font-bold text-xl uppercase tracking-tighter italic">Editar Receita</h3>
+                <button onclick="fecharModal('modalEditarReceita')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="formEditarReceita" class="p-10 space-y-6">
+                <input type="hidden" id="editReceitaId">
+                <div class="bg-slate-50 p-4 rounded-xl border mb-2">
+                    <p id="editReceitaMorador" class="font-bold text-slate-700"></p>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
-                    <input type="number" id="indValor" value="350.00" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
-                    <input type="date" id="indVencimento" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="number" step="0.01" id="editReceitaValor" placeholder="Valor R$" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="date" id="editReceitaData" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
                 </div>
-                <textarea id="indMensagem" rows="3" class="w-full px-5 py-4 rounded-xl bg-slate-50 border text-sm outline-none resize-none">Olá, [nome]! O boleto da unidade [unidade] no valor de R$ [valor] com vencimento em [vencimento] já está disponível.</textarea>
-                <div id="statusEnvio" class="hidden p-4 rounded-xl text-[10px] font-black uppercase text-center"></div>
-                <button type="submit" id="btnEnviar" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl flex items-center justify-center gap-3">
-                    <i data-lucide="send" class="w-4 h-4 text-[#8CC63F]"></i> Enviar Notificação
+                <select id="editReceitaStatus" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none font-bold">
+                    <option value="pendente">Pendente</option>
+                    <option value="pago">Pago</option>
+                    <option value="atrasado">Atrasado</option>
+                </select>
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase shadow-xl">Atualizar Receita</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAIS DE INSERÇÃO -->
+    <div id="modalNovoMorador" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
+            <div class="brand-blue p-8 text-white flex justify-between items-center">
+                <h3 class="font-bold text-xl uppercase">Registar Morador</h3>
+                <button onclick="fecharModal('modalNovoMorador')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="formNovoMorador" class="p-10 space-y-6">
+                <input type="text" id="newMoradorNome" placeholder="Nome Completo" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="text" id="newMoradorCPF" placeholder="CPF" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="text" id="newMoradorUnidade" placeholder="Unidade" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                </div>
+                <input type="email" id="newMoradorEmail" placeholder="E-mail Formal" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase">Criar Registo</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="modalNovaDespesa" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
+            <div class="brand-blue p-8 text-white flex justify-between items-center">
+                <h3 class="font-bold text-xl">Novo Lançamento (Saída)</h3>
+                <button onclick="fecharModal('modalNovaDespesa')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="formNovaDespesa" class="p-10 space-y-6">
+                <input type="text" id="newDespesaDesc" placeholder="Descrição" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                <div class="grid grid-cols-2 gap-4">
+                    <input type="number" step="0.01" id="newDespesaValor" placeholder="Valor R$" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                    <input type="date" id="newDespesaData" required class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none">
+                </div>
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase">Registar Saída</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL COBRANÇA E-MAIL -->
+    <div id="modalEmail" class="fixed inset-0 bg-black/60 hidden flex items-center justify-center p-4 z-50">
+        <div class="bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl overflow-hidden modal-animate">
+            <div class="brand-blue p-8 text-white flex justify-between items-center">
+                <h3 class="font-bold text-xl uppercase tracking-tighter flex items-center gap-3">
+                    <i data-lucide="mail"></i> Cobrança Formal
+                </h3>
+                <button onclick="fecharModal('modalEmail')"><i data-lucide="x" class="w-6 h-6"></i></button>
+            </div>
+            <form id="formEmailLocal" class="p-10 space-y-6">
+                <input type="hidden" id="mailDestinatario">
+                <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-center">
+                    <p id="labelDestino" class="font-black text-slate-700 leading-none">---</p>
+                </div>
+                <input type="text" id="mailSubject" placeholder="Assunto do E-mail" class="w-full px-5 py-4 rounded-xl bg-slate-50 border outline-none" required>
+                <textarea id="mailBody" rows="5" class="w-full px-5 py-4 rounded-xl bg-slate-50 border text-sm outline-none resize-none" required></textarea>
+                <div id="statusEmail" class="hidden p-4 rounded-xl text-[10px] font-black uppercase text-center"></div>
+                <button type="submit" class="w-full brand-blue text-white py-5 rounded-xl font-black uppercase flex items-center justify-center gap-3 shadow-lg">
+                    <i data-lucide="send" class="w-4 h-4 text-[#8CC63F]"></i> Enviar E-mail
                 </button>
             </form>
         </div>
@@ -163,101 +228,278 @@
         let listaMoradores = [];
         let listaReceitas = [];
         let listaDespesas = [];
+        let emailServerURL = localStorage.getItem('emailServerURL') || "http://localhost:3000";
 
-        async function checkDatabaseConnection() {
-            const dot = document.getElementById('db-status-dot');
-            const label = document.getElementById('label-topo');
-            try {
-                const { error } = await supabaseClient.from('moradores').select('id').limit(1);
-                if (error) throw error;
-                dot.className = "w-2.5 h-2.5 rounded-full bg-green-500 shadow-[0_0_8px_rgba(34,197,94,0.6)]";
-                label.innerText = "Sistema Online";
-                label.className = "text-[10px] font-black text-green-600 uppercase tracking-widest";
-            } catch (err) {
-                dot.className = "w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse";
-                label.innerText = "Falha de Ligação";
-                label.className = "text-[10px] font-black text-red-500 uppercase tracking-widest";
-            }
+        async function init() {
+            document.getElementById('topo-user-name').innerText = localStorage.getItem('usuarioAtivo') || "Admin";
+            await carregarDados();
+            mudarTela('moradores');
         }
 
-        function getZConfig() {
-            return {
-                instancia: localStorage.getItem('z_instancia') || "",
-                token: localStorage.getItem('z_token') || "",
-                clientToken: localStorage.getItem('z_client_token') || ""
-            };
+        async function carregarDados() {
+            const { data: m } = await supabaseClient.from('moradores').select('*').order('nome_completo');
+            const { data: r } = await supabaseClient.from('receitas').select('*').order('data_vencimento');
+            const { data: d } = await supabaseClient.from('despesas').select('*').order('data_vencimento');
+            listaMoradores = m || [];
+            listaReceitas = r || [];
+            listaDespesas = d || [];
         }
 
         async function mudarTela(tela) {
             const conteudo = document.getElementById('conteudo-principal');
-            document.querySelectorAll('nav button, .submenu-item').forEach(b => b.classList.remove('active-link'));
+            conteudo.innerHTML = '<div class="flex justify-center p-20"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-slate-800"></div></div>';
             
             if (tela === 'moradores') {
                 conteudo.innerHTML = `
                     <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-slate-800 tracking-tight">Registo de Moradores</h2>
-                        <button onclick="abrirModal('modalNovoMorador')" class="brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest flex items-center gap-2 shadow-lg">
-                            <i data-lucide="plus" class="w-4 h-4 text-[#8CC63F]"></i> Novo Morador
+                        <h2 class="text-xl font-bold text-slate-800 uppercase tracking-tight italic">Gestão de Unidades</h2>
+                        <button onclick="abrirModal('modalNovoMorador')" class="brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase flex items-center gap-2 shadow-lg hover:brightness-110">
+                            <i data-lucide="plus" class="w-4 h-4 text-[#8CC63F]"></i> Novo Registo
+                        </button>
+                    </div>
+                    <div id="gridMoradores" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>`;
+                renderMoradores();
+            } else if (tela === 'despesas') {
+                conteudo.innerHTML = `
+                    <div class="flex justify-between items-center mb-6">
+                        <h2 class="text-xl font-bold text-slate-800 uppercase tracking-tight italic">Financeiro / Saídas</h2>
+                        <button onclick="abrirModal('modalNovaDespesa')" class="brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase flex items-center gap-2 shadow-lg">
+                            <i data-lucide="plus" class="w-4 h-4 text-[#8CC63F]"></i> Lançar
                         </button>
                     </div>
                     <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
                         <table class="w-full text-left">
-                            <thead class="bg-slate-50 text-[10px] font-black uppercase">
-                                <tr>
-                                    <th class="px-10 py-6">Nome</th>
-                                    <th class="px-10 py-6 text-center">CPF</th>
-                                    <th class="px-10 py-6 text-center">Unidade</th>
-                                    <th class="px-10 py-6 text-right">Excluir</th>
-                                </tr>
+                            <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                <tr><th class="px-10 py-6">Descrição</th><th class="px-10 py-6 text-center">Valor</th><th class="px-10 py-6 text-center">Vencimento</th><th class="px-10 py-6 text-right">Acções</th></tr>
                             </thead>
-                            <tbody id="tabelaMoradores" class="divide-y"></tbody>
+                            <tbody id="tabelaDespesas" class="divide-y"></tbody>
                         </table>
                     </div>`;
-                buscarMoradores();
-            } else if (tela === 'despesas') {
-                conteudo.innerHTML = `
-                    <div class="flex justify-between items-center mb-6">
-                        <h2 class="text-xl font-bold text-slate-800">Financeiro / Saídas</h2>
-                        <button onclick="abrirModal('modalNovaDespesa')" class="brand-blue text-white px-6 py-3 rounded-xl font-black text-[10px] uppercase flex items-center gap-2 shadow-lg">
-                            <i data-lucide="plus" class="w-4 h-4 text-[#8CC63F]"></i> Lançar Despesa
-                        </button>
-                    </div>
-                    <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 text-[10px] font-black uppercase"><tr><th class="px-10 py-6">Descrição</th><th class="px-10 py-6">Valor</th><th class="px-10 py-6">Status</th><th class="px-10 py-6 text-right">Excluir</th></tr></thead><tbody id="tabelaDespesas" class="divide-y"></tbody></table></div>`;
-                buscarDespesas();
+                renderDespesas();
             } else if (tela === 'receber') {
-                conteudo.innerHTML = `<div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden"><table class="w-full text-left"><thead class="bg-slate-50 text-[10px] font-black uppercase"><tr><th class="px-10 py-6">Morador</th><th class="px-10 py-6">Valor</th><th class="px-10 py-6">Status</th><th class="px-10 py-6 text-right">Excluir</th></tr></thead><tbody id="tabelaReceitas" class="divide-y"></tbody></table></div>`;
-                buscarReceitas();
-            } else if (tela === 'cobrar') {
-                conteudo.innerHTML = `<div id="listaMoradoresCobrar" class="grid grid-cols-1 sm:grid-cols-2 gap-6"></div>`;
-                buscarMoradoresCobrar();
-            } else if (tela === 'config') {
-                const conf = getZConfig();
                 conteudo.innerHTML = `
-                    <div class="max-w-xl mx-auto bg-white p-10 rounded-[3rem] shadow-sm border space-y-8">
-                        <div class="text-center font-black text-slate-800 text-xl">Credenciais Z-API</div>
+                    <div class="mb-6"><h2 class="text-xl font-bold text-slate-800 uppercase tracking-tight italic">Controlo de Receitas</h2></div>
+                    <div class="bg-white rounded-[2rem] shadow-sm border overflow-hidden">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-50 text-[10px] font-black uppercase text-slate-400">
+                                <tr><th class="px-10 py-6">Morador</th><th class="px-10 py-6 text-center">Valor</th><th class="px-10 py-6 text-center">Vencimento</th><th class="px-10 py-6 text-right">Status / Acções</th></tr>
+                            </thead>
+                            <tbody id="tabelaReceitas" class="divide-y"></tbody>
+                        </table>
+                    </div>`;
+                renderReceitas();
+            } else if (tela === 'cobrar') {
+                conteudo.innerHTML = `
+                    <div class="mb-6"><h2 class="text-xl font-bold text-slate-800 uppercase tracking-tight italic">Cobrança por E-mail</h2></div>
+                    <div id="listaCobrar" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>`;
+                renderCobrar();
+            } else if (tela === 'config') {
+                conteudo.innerHTML = `
+                    <div class="max-w-md mx-auto bg-white p-12 rounded-[3rem] shadow-sm border space-y-8 animate-in zoom-in duration-300">
+                        <div class="text-center font-black text-slate-800 text-2xl uppercase tracking-tighter italic">API de E-mail Local</div>
                         <div class="space-y-4">
-                            <input type="text" id="z_inst" value="${conf.instancia}" placeholder="ID da Instância" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border outline-none">
-                            <input type="text" id="z_tok" value="${conf.token}" placeholder="Token" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border outline-none">
-                            <input type="text" id="z_ctok" value="${conf.clientToken}" placeholder="Client Token" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border outline-none">
+                            <label class="text-[10px] font-black text-slate-400 uppercase ml-2">URL do Servidor do Amigo</label>
+                            <input type="text" id="urlInput" value="${emailServerURL}" class="w-full px-5 py-4 rounded-2xl bg-slate-50 border outline-none font-mono text-center text-sm">
                         </div>
-                        <button onclick="salvarZConfig()" class="w-full brand-blue text-white py-5 rounded-2xl font-black uppercase shadow-xl">Gravar Configurações</button>
+                        <button onclick="salvarConfig()" class="w-full brand-blue text-white py-5 rounded-2xl font-black uppercase shadow-xl hover:brightness-110 transition-all">Salvar Configuração</button>
                     </div>`;
             }
             lucide.createIcons();
         }
 
-        // --- SUBMITS ---
-        document.getElementById('formNovoMorador').onsubmit = async (e) => {
+        // RENDERS
+        function renderMoradores() {
+            const div = document.getElementById('gridMoradores');
+            div.innerHTML = listaMoradores.map(m => `
+                <div class="bg-white p-8 rounded-[2.5rem] border shadow-sm hover:border-[#8CC63F] transition-all relative group">
+                    <div class="absolute top-6 right-6 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button onclick="abrirEditarMorador(${m.id})" class="p-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="apagar('moradores', ${m.id})" class="p-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+                    <p class="font-black text-slate-800 leading-none text-lg">${m.nome_completo}</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase mt-2 tracking-widest">Unidade ${m.unidade}</p>
+                    <div class="mt-4 pt-4 border-t border-slate-50 flex flex-col gap-1">
+                        <span class="text-[9px] font-black text-slate-300 uppercase italic">${m.email || '---'}</span>
+                    </div>
+                </div>`).join('');
+            lucide.createIcons();
+        }
+
+        function renderDespesas() {
+            const container = document.getElementById('tabelaDespesas');
+            container.innerHTML = listaDespesas.map(d => `
+                <tr>
+                    <td class="px-10 py-6 font-bold text-slate-700">${d.descricao}</td>
+                    <td class="px-10 py-6 text-center font-mono text-xs font-bold text-red-500">R$ ${parseFloat(d.valor).toFixed(2)}</td>
+                    <td class="px-10 py-6 text-center text-xs text-slate-400 font-bold">${new Date(d.data_vencimento).toLocaleDateString()}</td>
+                    <td class="px-10 py-6 text-right flex justify-end gap-2">
+                        <button onclick="abrirEditarDespesa(${d.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="apagar('despesas', ${d.id})" class="p-2 text-red-300 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>`).join('');
+            lucide.createIcons();
+        }
+
+        function renderReceitas() {
+            const container = document.getElementById('tabelaReceitas');
+            container.innerHTML = listaReceitas.map(r => `
+                <tr>
+                    <td class="px-10 py-6 font-bold text-slate-700">${r.nome_morador} <br><span class="text-[9px] uppercase font-black text-slate-300 tracking-widest">Unidade ${r.unidade}</span></td>
+                    <td class="px-10 py-6 text-center font-mono text-xs font-bold text-green-600">R$ ${parseFloat(r.valor).toFixed(2)}</td>
+                    <td class="px-10 py-6 text-center text-xs text-slate-400 font-bold">${new Date(r.data_vencimento).toLocaleDateString()}</td>
+                    <td class="px-10 py-6 text-right flex justify-end items-center gap-4">
+                        <span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${r.status === 'pago' ? 'bg-green-100 text-green-600' : 'bg-orange-100 text-orange-600'}">
+                            ${r.status}
+                        </span>
+                        <button onclick="abrirEditarReceita(${r.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><i data-lucide="pencil" class="w-4 h-4"></i></button>
+                        <button onclick="apagar('receitas', ${r.id})" class="p-2 text-red-300 hover:text-red-500 transition-colors"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </td>
+                </tr>`).join('');
+            lucide.createIcons();
+        }
+
+        function renderCobrar() {
+            const div = document.getElementById('listaCobrar');
+            const pendentes = listaReceitas.filter(r => r.status === 'pendente');
+            if(pendentes.length === 0) {
+                div.innerHTML = '<p class="col-span-full text-center py-20 text-slate-300 font-bold uppercase tracking-widest italic">Nenhuma cobrança pendente para hoje.</p>';
+                return;
+            }
+            div.innerHTML = pendentes.map(r => {
+                const morador = listaMoradores.find(m => m.id === r.morador_id);
+                return `
+                <div class="bg-white p-8 rounded-[2.5rem] border shadow-sm flex items-center justify-between group hover:border-[#8CC63F] transition-all">
+                    <div>
+                        <p class="font-black text-slate-700 leading-tight">${r.nome_morador}</p>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest italic">${morador?.email || 'Sem e-mail registado'}</p>
+                        <p class="text-[10px] font-black text-red-500 uppercase mt-1">Dívida: R$ ${parseFloat(r.valor).toFixed(2)}</p>
+                    </div>
+                    <button onclick="abrirModalEmail(${r.id})" class="brand-blue text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg group-hover:scale-105 transition-transform">
+                        <i data-lucide="mail" class="w-6 h-6 text-[#8CC63F]"></i>
+                    </button>
+                </div>`;
+            }).join('');
+            lucide.createIcons();
+        }
+
+        // LÓGICA DE EDIÇÃO (OPEN MODALS)
+        function abrirEditarMorador(id) {
+            const m = listaMoradores.find(x => x.id == id);
+            if(m) {
+                document.getElementById('editMoradorId').value = m.id;
+                document.getElementById('editMoradorNome').value = m.nome_completo;
+                document.getElementById('editMoradorCPF').value = m.cpf || "";
+                document.getElementById('editMoradorUnidade').value = m.unidade;
+                document.getElementById('editMoradorEmail').value = m.email || "";
+                abrirModal('modalEditarMorador');
+            }
+        }
+
+        function abrirEditarDespesa(id) {
+            const d = listaDespesas.find(x => x.id == id);
+            if(d) {
+                document.getElementById('editDespesaId').value = d.id;
+                document.getElementById('editDespesaDesc').value = d.descricao;
+                document.getElementById('editDespesaValor').value = d.valor;
+                document.getElementById('editDespesaData').value = d.data_vencimento;
+                abrirModal('modalEditarDespesa');
+            }
+        }
+
+        function abrirEditarReceita(id) {
+            const r = listaReceitas.find(x => x.id == id);
+            if(r) {
+                document.getElementById('editReceitaId').value = r.id;
+                document.getElementById('editReceitaMorador').innerText = `${r.nome_morador} (Unid. ${r.unidade})`;
+                document.getElementById('editReceitaValor').value = r.valor;
+                document.getElementById('editReceitaData').value = r.data_vencimento;
+                document.getElementById('editReceitaStatus').value = r.status;
+                abrirModal('modalEditarReceita');
+            }
+        }
+
+        // SUBMITS DE ATUALIZAÇÃO (UPDATE)
+        document.getElementById('formEditarMorador').onsubmit = async (e) => {
             e.preventDefault();
-            const { error } = await supabaseClient.from('moradores').insert([{
-                nome_completo: document.getElementById('newMoradorNome').value,
-                cpf: document.getElementById('newMoradorCPF').value,
-                unidade: document.getElementById('newMoradorUnidade').value,
-                telefone: document.getElementById('newMoradorTelefone').value
-            }]);
-            if (!error) { fecharModal('modalNovoMorador'); e.target.reset(); buscarMoradores(); }
+            const id = document.getElementById('editMoradorId').value;
+            await supabaseClient.from('moradores').update({
+                nome_completo: document.getElementById('editMoradorNome').value,
+                cpf: document.getElementById('editMoradorCPF').value,
+                unidade: document.getElementById('editMoradorUnidade').value,
+                email: document.getElementById('editMoradorEmail').value
+            }).eq('id', id);
+            fecharModal('modalEditarMorador');
+            await carregarDados();
+            mudarTela('moradores');
         };
 
+        document.getElementById('formEditarDespesa').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editDespesaId').value;
+            await supabaseClient.from('despesas').update({
+                descricao: document.getElementById('editDespesaDesc').value,
+                valor: parseFloat(document.getElementById('editDespesaValor').value),
+                data_vencimento: document.getElementById('editDespesaData').value
+            }).eq('id', id);
+            fecharModal('modalEditarDespesa');
+            await carregarDados();
+            mudarTela('despesas');
+        };
+
+        document.getElementById('formEditarReceita').onsubmit = async (e) => {
+            e.preventDefault();
+            const id = document.getElementById('editReceitaId').value;
+            await supabaseClient.from('receitas').update({
+                valor: parseFloat(document.getElementById('editReceitaValor').value),
+                data_vencimento: document.getElementById('editReceitaData').value,
+                status: document.getElementById('editReceitaStatus').value
+            }).eq('id', id);
+            fecharModal('modalEditarReceita');
+            await carregarDados();
+            mudarTela('receber');
+        };
+
+        // LÓGICA DE E-MAIL E COBRANÇA
+        function abrirModalEmail(receitaId) {
+            const r = listaReceitas.find(x => x.id === receitaId);
+            const m = listaMoradores.find(x => x.id === r.morador_id);
+            if(!m?.email) { alert("Este morador não tem e-mail cadastrado!"); return; }
+            document.getElementById('mailDestinatario').value = m.email;
+            document.getElementById('labelDestino').innerText = m.nome_completo;
+            document.getElementById('mailSubject').value = `Notificação de Condomínio - Unidade ${m.unidade}`;
+            document.getElementById('mailBody').value = `Olá, ${m.nome_completo}. Informamos que existe um boleto de R$ ${parseFloat(r.valor).toFixed(2)} com vencimento em ${new Date(r.data_vencimento).toLocaleDateString()} aguardando liquidação.`;
+            document.getElementById('modalEmail').classList.remove('hidden');
+        }
+
+        document.getElementById('formEmailLocal').onsubmit = async (e) => {
+            e.preventDefault();
+            const status = document.getElementById('statusEmail');
+            status.classList.remove('hidden');
+            status.innerText = "A Enviar via Servidor Local...";
+            status.className = "p-4 rounded-xl text-[10px] font-black bg-slate-100 text-slate-500 block";
+            const payload = {
+                to: document.getElementById('mailDestinatario').value,
+                subject: document.getElementById('mailSubject').value,
+                text: document.getElementById('mailBody').value
+            };
+            try {
+                const response = await fetch(`${emailServerURL}/send-email`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                if (response.ok) {
+                    status.innerText = "E-mail Enviado!";
+                    status.className = "p-4 rounded-xl text-[10px] font-black bg-green-50 text-green-600 block";
+                    setTimeout(() => fecharModal('modalEmail'), 2000);
+                } else { throw new Error(); }
+            } catch (err) {
+                status.innerText = "Erro: API Local Offline";
+                status.className = "p-4 rounded-xl text-[10px] font-black bg-red-50 text-red-600 block";
+            }
+        };
+
+        // SUBMITS DE INSERÇÃO (INSERT)
         document.getElementById('formNovaDespesa').onsubmit = async (e) => {
             e.preventDefault();
             await supabaseClient.from('despesas').insert([{
@@ -267,187 +509,43 @@
                 pago: false
             }]);
             fecharModal('modalNovaDespesa');
-            e.target.reset();
-            buscarDespesas();
+            await carregarDados();
+            mudarTela('despesas');
         };
 
-        // --- BUSCAS ---
-        async function buscarMoradores() {
-            const { data } = await supabaseClient.from('moradores').select('*').order('nome_completo');
-            if (data) {
-                listaMoradores = data;
-                document.getElementById('tabelaMoradores').innerHTML = data.map(m => `
-                    <tr>
-                        <td class="px-10 py-6 font-bold text-slate-700">${m.nome_completo}</td>
-                        <td class="px-10 py-6 text-center text-xs font-mono text-slate-500">${m.cpf || '---'}</td>
-                        <td class="px-10 py-6 text-center text-slate-400">Apto ${m.unidade}</td>
-                        <td class="px-10 py-6 text-right flex justify-end gap-2">
-                            <button onclick="abrirEditarMorador(${m.id})" class="p-2 text-blue-500 hover:bg-blue-50 rounded-lg"><i data-lucide="pencil" class="w-4 h-4"></i></button>
-                            <button onclick="apagar('moradores', ${m.id})" class="p-2 text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>`).join('');
-                lucide.createIcons();
-            }
-        }
+        document.getElementById('formNovoMorador').onsubmit = async (e) => {
+            e.preventDefault();
+            await supabaseClient.from('moradores').insert([{
+                nome_completo: document.getElementById('newMoradorNome').value,
+                cpf: document.getElementById('newMoradorCPF').value,
+                unidade: document.getElementById('newMoradorUnidade').value,
+                email: document.getElementById('newMoradorEmail').value
+            }]);
+            fecharModal('modalNovoMorador');
+            await carregarDados();
+            mudarTela('moradores');
+        };
 
-        async function buscarDespesas() {
-            const { data } = await supabaseClient.from('despesas').select('*').order('data_vencimento');
-            if (data) {
-                listaDespesas = data;
-                document.getElementById('tabelaDespesas').innerHTML = data.map(d => `
-                    <tr>
-                        <td class="px-10 py-6 font-bold text-slate-700">${d.descricao}</td>
-                        <td class="px-10 py-6 font-mono text-xs">R$ ${parseFloat(d.valor).toFixed(2)}</td>
-                        <td class="px-10 py-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${d.pago ? 'bg-green-50 text-green-600' : 'bg-red-50 text-red-500'}">${d.pago ? 'Pago' : 'Pendente'}</span></td>
-                        <td class="px-10 py-6 text-right flex justify-end gap-2">
-                            ${d.pago ? `<button onclick="desfazerBaixa('despesas', ${d.id})" class="p-2 text-orange-500 hover:bg-orange-50 rounded-lg"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>` : `<button onclick="marcarPago('despesas', ${d.id})" class="p-2 text-green-500 hover:bg-green-50 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></button>`}
-                            <button onclick="apagar('despesas', ${d.id})" class="p-2 text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>`).join('');
-                lucide.createIcons();
-            }
-        }
-
-        async function buscarReceitas() {
-            const { data } = await supabaseClient.from('receitas').select('*').order('data_vencimento');
-            if (data) {
-                listaReceitas = data;
-                document.getElementById('tabelaReceitas').innerHTML = data.map(r => `
-                    <tr>
-                        <td class="px-10 py-6 font-bold">${r.nome_morador} <br><span class="text-[10px] text-slate-400">Apto ${r.unidade}</span></td>
-                        <td class="px-10 py-6 font-mono text-xs">R$ ${parseFloat(r.valor).toFixed(2)}</td>
-                        <td class="px-10 py-6"><span class="px-3 py-1 rounded-full text-[9px] font-black uppercase ${r.status === 'pago' ? 'bg-green-50 text-green-600' : 'bg-orange-50 text-orange-600'}">${r.status}</span></td>
-                        <td class="px-10 py-6 text-right flex justify-end gap-2">
-                            ${r.status === 'pago' ? `<button onclick="desfazerBaixa('receitas', ${r.id})" class="p-2 text-orange-500 hover:bg-orange-50 rounded-lg"><i data-lucide="rotate-ccw" class="w-4 h-4"></i></button>` : `<button onclick="marcarPago('receitas', ${r.id})" class="p-2 text-green-500 hover:bg-green-50 rounded-lg"><i data-lucide="check" class="w-4 h-4"></i></button>`}
-                            <button onclick="apagar('receitas', ${r.id})" class="p-2 text-red-300 hover:text-red-500"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
-                        </td>
-                    </tr>`).join('');
-                lucide.createIcons();
-            }
-        }
-
-        async function buscarMoradoresCobrar() {
-            const { data } = await supabaseClient.from('moradores').select('*').order('nome_completo');
-            if (data) {
-                listaMoradores = data;
-                document.getElementById('listaMoradoresCobrar').innerHTML = data.map(m => `
-                    <div class="bg-white p-8 rounded-[2rem] border shadow-sm flex items-center justify-between hover:border-[#8CC63F] transition-all">
-                        <div><p class="font-black text-slate-700">${m.nome_completo}</p><span class="text-[10px] font-bold text-slate-400 uppercase">Apto ${m.unidade}</span></div>
-                        <button onclick="abrirModalCobrar(${m.id})" class="brand-blue text-white w-14 h-14 rounded-2xl flex items-center justify-center shadow-lg"><i data-lucide="message-square" class="w-6 h-6 text-[#8CC63F]"></i></button>
-                    </div>`).join('');
-                lucide.createIcons();
-            }
-        }
-
-        // --- ACÇÕES ---
-        async function marcarPago(tabela, id) {
-            const update = tabela === 'despesas' ? { pago: true } : { status: 'pago' };
-            await supabaseClient.from(tabela).update(update).eq('id', id);
-            mudarTela(tabela === 'despesas' ? 'despesas' : 'receber');
-        }
-
-        async function desfazerBaixa(tabela, id) {
-            const update = tabela === 'despesas' ? { pago: false } : { status: 'pendente' };
-            await supabaseClient.from(tabela).update(update).eq('id', id);
-            mudarTela(tabela === 'despesas' ? 'despesas' : 'receber');
-        }
-
+        // AUXILIARES
         async function apagar(tabela, id) {
-            if (confirm("Deseja eliminar este registo permanentemente?")) {
+            if(confirm("Deseja eliminar este registo permanentemente?")) {
                 await supabaseClient.from(tabela).delete().eq('id', id);
+                await carregarDados();
                 mudarTela(tabela === 'moradores' ? 'moradores' : (tabela === 'despesas' ? 'despesas' : 'receber'));
             }
         }
 
-        function abrirEditarMorador(id) {
-            const m = listaMoradores.find(x => x.id == id);
-            if (m) {
-                document.getElementById('editMoradorId').value = m.id;
-                document.getElementById('editMoradorNome').value = m.nome_completo;
-                document.getElementById('editMoradorCPF').value = m.cpf || "";
-                document.getElementById('editMoradorUnidade').value = m.unidade;
-                document.getElementById('editMoradorTelefone').value = m.telefone || "";
-                abrirModal('modalEditarMorador');
-            }
-        }
-
-        document.getElementById('formEditarMorador').onsubmit = async (e) => {
-            e.preventDefault();
-            const id = document.getElementById('editMoradorId').value;
-            await supabaseClient.from('moradores').update({
-                nome_completo: document.getElementById('editMoradorNome').value,
-                cpf: document.getElementById('editMoradorCPF').value,
-                unidade: document.getElementById('editMoradorUnidade').value,
-                telefone: document.getElementById('editMoradorTelefone').value
-            }).eq('id', id);
-            fecharModal('modalEditarMorador');
-            buscarMoradores();
-        };
-
-        function abrirModalCobrar(id) {
-            const m = listaMoradores.find(x => x.id == id);
-            if (m) {
-                document.getElementById('indMoradorId').value = m.id;
-                document.getElementById('indMoradorNome').innerText = m.nome_completo;
-                document.getElementById('indMoradorUnidade').innerText = "Unidade " + m.unidade;
-                abrirModal('modalCobrarIndividual');
-            }
-        }
-
-        document.getElementById('formCobrarZAPI').onsubmit = async (e) => {
-            e.preventDefault();
-            const conf = getZConfig();
-            const status = document.getElementById('statusEnvio');
-            const morador = listaMoradores.find(x => x.id == document.getElementById('indMoradorId').value);
-            
-            const msg = document.getElementById('indMensagem').value
-                .replace('[nome]', morador.nome_completo)
-                .replace('[unidade]', morador.unidade)
-                .replace('[valor]', document.getElementById('indValor').value)
-                .replace('[vencimento]', document.getElementById('indVencimento').value.split('-').reverse().join('/'));
-
-            status.classList.remove('hidden');
-            status.innerText = "A Enviar...";
-            status.className = "p-4 rounded-xl text-[10px] font-black bg-slate-100 text-slate-500 block";
-
-            try {
-                let phone = morador.telefone.replace(/\D/g, "");
-                if (phone.length === 11 && !phone.startsWith("55")) phone = "55" + phone;
-
-                const headers = { 'Content-Type': 'application/json' };
-                if (conf.clientToken) headers['Client-Token'] = conf.clientToken;
-
-                const response = await fetch(`https://api.z-api.io/instances/${conf.instancia}/token/${conf.token}/send-text`, {
-                    method: 'POST',
-                    headers: headers,
-                    body: JSON.stringify({ phone: phone, message: msg })
-                });
-
-                if (response.ok) {
-                    status.innerText = "Enviado!";
-                    status.className = "p-4 rounded-xl text-[10px] font-black bg-green-50 text-green-600 block";
-                    setTimeout(() => fecharModal('modalCobrarIndividual'), 2000);
-                } else { throw new Error("Erro API"); }
-            } catch (err) {
-                status.innerText = "Falha no Envio";
-                status.className = "p-4 rounded-xl text-[10px] font-black bg-red-50 text-red-600 block";
-            }
-        };
-
-        function salvarZConfig() {
-            localStorage.setItem('z_instancia', document.getElementById('z_inst').value.trim());
-            localStorage.setItem('z_token', document.getElementById('z_tok').value.trim());
-            localStorage.setItem('z_client_token', document.getElementById('z_ctok').value.trim());
-            alert("Configurações Guardadas!");
-            mudarTela('cobrar');
+        function salvarConfig() {
+            emailServerURL = document.getElementById('urlInput').value.trim();
+            localStorage.setItem('emailServerURL', emailServerURL);
+            alert("Servidor configurado com sucesso!");
         }
 
         function abrirModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function fecharModal(id) { document.getElementById(id).classList.add('hidden'); }
-        function toggleFinanceiro() { document.getElementById('submenu-financeiro').classList.toggle('hidden'); }
-        function sair() { localStorage.removeItem('usuarioAtivo'); window.location.href = 'index.html'; }
-
-        window.onload = () => { checkDatabaseConnection(); mudarTela('moradores'); };
+        function toggleSub(id) { document.getElementById(id).classList.toggle('hidden'); }
+        function sair() { localStorage.clear(); window.location.href = 'index.html'; }
+        window.onload = init;
     </script>
 </body>
 </html>
